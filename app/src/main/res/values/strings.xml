@@ -3,4 +3,10 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_music_sort">本地音乐</string>
+    <string name="single">单曲</string>
+    <string name="iLike">歌手</string>
+    <string name="recent">专辑</string>
+    <string name="folder">文件夹</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

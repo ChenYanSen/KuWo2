@@ -165,8 +165,8 @@
                                 android:text="4" />
 
                             <ImageView
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:scaleType="fitXY"
                                 android:src="@drawable/right" />
                         </TableRow>
@@ -180,7 +180,8 @@
                     <ListView
                         android:id="@+id/musicFormListView"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" />
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="62dp"/>
                 </LinearLayout>
 
                 <include layout="@layout/main_playbar"/>

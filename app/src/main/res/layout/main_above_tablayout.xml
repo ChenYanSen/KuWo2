@@ -8,9 +8,19 @@
     <include layout="@layout/main_toolbar" />
 
     <LinearLayout
+        android:id="@+id/main_above_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#88ffffff"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="#55bbbbbb"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="7dp">
@@ -83,7 +93,6 @@
     <TableLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#88ffffff"
         android:collapseColumns="3"
         android:stretchColumns="0">
 
@@ -113,10 +122,11 @@
                 android:text="0" />
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/right" />
         </TableRow>
     </TableLayout>
+    </LinearLayout>
 </LinearLayout>

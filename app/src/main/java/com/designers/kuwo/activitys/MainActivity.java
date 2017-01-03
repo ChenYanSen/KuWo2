@@ -1,12 +1,17 @@
 package com.designers.kuwo.activitys;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.designers.kuwo.R;
 import com.designers.kuwo.utils.CircularImage;
+import com.designers.kuwo.utils.FastBlurUtil;
 import com.designers.kuwo.utils.MusicFromListViewAdapter;
 import com.designers.kuwo.utils.StatusBarCompat;
 
@@ -31,6 +36,7 @@ public class MainActivity extends ActionBarActivity {
     private CircularImage main_recent_view;//主页最近按钮
     private CircularImage playbar_img_imgview;//主页播放栏头像
     private CircularImage menu_photo_imgview;//侧滑菜单头像
+    private LinearLayout main_above_layout;//主页上面的布局
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,7 @@ public class MainActivity extends ActionBarActivity {
         main_recent_view = (CircularImage) findViewById(R.id.main_recent_imgview);
         playbar_img_imgview = (CircularImage) findViewById(R.id.playbar_img_imgview);
         menu_photo_imgview = (CircularImage) findViewById(R.id.menu_photo_imgview);
+        main_above_layout = (LinearLayout) findViewById(R.id.main_above_layout);
 
 
         MusicFromListViewAdapter adapter = new MusicFromListViewAdapter(this, musicFromlistItems);
@@ -66,6 +73,14 @@ public class MainActivity extends ActionBarActivity {
         //toolbar.setLogo(R.drawable.l2);
         //setSupportActionBar(toolbar);
         StatusBarCompat.compat(this);
+
+        //主页虚化
+        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.mainback1);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 20, bitmap.getHeight() / 20, false);
+        Bitmap blurBitMap = FastBlurUtil.doBlur(scaledBitmap, 8, true);
+        BitmapDrawable drawable = new BitmapDrawable(blurBitMap);
+        main_above_layout.setBackground(drawable);
+
     }
 
     public List<Map<String, ?>> initMusicFrom() {
@@ -73,8 +88,9 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < 4; i++) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("formImageId", R.drawable.musicformimg);
-            map.put("listText", "我的歌单" + i);
-            map.put("size", i + "首歌曲");
+            map.put("listTextFrist", "我的歌单" + i);
+            map.put("listTextSecond","我们都一样");
+            map.put("listTextThird", i + "告白气球");
             listItems.add(map);
         }
         return listItems;

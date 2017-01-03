@@ -48,16 +48,18 @@ public class MusicFromListViewAdapter extends BaseAdapter {
         if (null == convertView) {
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.item_musicformlistview, null);
-            viewHolder.itemMusicForm_Name_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_Name_txt);
-            viewHolder.itemMusicForm_Num_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_Num_txt);
+            viewHolder.itemMusicForm_first_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_first_txt);
+            viewHolder.itemMusicForm_second_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_second_txt);
+            viewHolder.itemMusicForm_Third_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_third_txt);
             viewHolder.itemMusicForm_photo_imageview = (ImageView) convertView.findViewById(R.id.itemMusicForm_photo_imageview);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.itemMusicForm_Name_txt.setText(listItems.get(position).get("listText").toString());
-        viewHolder.itemMusicForm_Num_txt.setText(listItems.get(position).get("size").toString());
+        viewHolder.itemMusicForm_first_txt.setText(listItems.get(position).get("listTextFrist").toString());
+        viewHolder.itemMusicForm_second_txt.setText(listItems.get(position).get("listTextSecond").toString());
+        viewHolder.itemMusicForm_Third_txt.setText(listItems.get(position).get("listTextThird").toString());
         viewHolder.itemMusicForm_photo_imageview.setImageResource(Integer.parseInt(
                 listItems.get(position).get("formImageId").toString()
         ));
@@ -66,8 +68,9 @@ public class MusicFromListViewAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        public TextView itemMusicForm_Name_txt;
-        public TextView itemMusicForm_Num_txt;
+        public TextView itemMusicForm_first_txt;
+        public TextView itemMusicForm_second_txt;
+        public TextView itemMusicForm_Third_txt;
         public ImageView itemMusicForm_photo_imageview;
     }
 

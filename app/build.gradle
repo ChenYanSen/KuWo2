@@ -3,7 +3,6 @@ apply plugin: 'me.tatarka.retrolambda'
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
-    android{compileOptions.encoding="GBK"}
     defaultConfig {
         applicationId "com.designers.kuwo"
         minSdkVersion 18
@@ -24,5 +23,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:support-v4:25.1.0'
 }

@@ -320,7 +320,7 @@ public class MusicSortActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_music_sort, menu);
+        //getMenuInflater().inflate(R.menu.menu_music_sort, menu);
         return true;
     }
 
@@ -332,6 +332,4 @@ public class MusicSortActivity extends FragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    //**********************//
 }

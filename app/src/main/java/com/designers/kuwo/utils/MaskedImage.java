@@ -11,6 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+/**
+ *
+ */
 public abstract class MaskedImage extends ImageView {
 	private static final Xfermode MASK_XFERMODE;  
     private Bitmap mask;  

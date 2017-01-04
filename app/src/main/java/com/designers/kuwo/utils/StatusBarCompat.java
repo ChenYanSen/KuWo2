@@ -8,6 +8,9 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * 沉浸式状态栏
+ */
 public class StatusBarCompat
 {
     private static final int INVALID_VAL = -1;

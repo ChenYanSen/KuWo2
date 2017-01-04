@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2016/12/30.
+ * 主页歌单列表
  */
 public class MusicFromListViewAdapter extends BaseAdapter {
     private Context context;

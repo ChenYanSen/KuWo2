@@ -11,7 +11,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 /**
- * Created by Administrator on 2016/12/28.
+ * ；侧滑
  */
 public class MyHorizontalScollView extends HorizontalScrollView {
 

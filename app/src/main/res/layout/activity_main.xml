@@ -16,7 +16,6 @@
 
             <include layout="@layout/menu"></include>
 
-
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -28,129 +27,20 @@
                     android:background="#ffffff"
                     android:orientation="vertical">
 
-                    <!--<include layout="@layout/main_toolbar"/>-->
 
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:gravity="center"-->
-                        <!--android:orientation="horizontal"-->
-                        <!--android:padding="7dp">-->
-
-                        <!--<LinearLayout-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_weight="1"-->
-                            <!--android:gravity="center"-->
-                            <!--android:orientation="vertical">-->
-
-                            <!--<util.CircularImage-->
-                                <!--android:id="@+id/main_music_imgview"-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:layout_marginTop="5dp"-->
-                                <!--android:scaleType="fitXY" />-->
-
-                            <!--<TextView-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:padding="5dp"-->
-                                <!--android:text="单曲" />-->
-                        <!--</LinearLayout>-->
-
-                        <!--<LinearLayout-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_weight="1"-->
-                            <!--android:gravity="center"-->
-                            <!--android:orientation="vertical">-->
-
-                            <!--<util.CircularImage-->
-                                <!--android:id="@+id/main_like_imgview"-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:layout_marginTop="5dp"-->
-                                <!--android:scaleType="fitXY" />-->
-
-                            <!--<TextView-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:padding="5dp"-->
-                                <!--android:text="我喜欢" />-->
-                        <!--</LinearLayout>-->
-
-                        <!--<LinearLayout-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_weight="1"-->
-                            <!--android:gravity="center"-->
-                            <!--android:orientation="vertical">-->
-
-                            <!--<util.CircularImage-->
-                                <!--android:id="@+id/main_recent_imgview"-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:layout_marginTop="5dp"-->
-                                <!--android:scaleType="fitXY" />l-->
-
-                            <!--<TextView-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:padding="5dp"-->
-                                <!--android:text="最近" />-->
-                        <!--</LinearLayout>-->
-                    <!--</LinearLayout>-->
-
-                    <!--<View-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="5dp"-->
-                        <!--android:background="#55bbbbbb" />-->
-
-
-                    <!--<TableLayout-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:collapseColumns="3"-->
-                        <!--android:padding="8dp"-->
-                        <!--android:stretchColumns="0">-->
-
-                        <!--<TableRow android:gravity="center">-->
-
-                            <!--<TextView-->
-                                <!--android:layout_width="fill_parent"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:paddingLeft="5dp"-->
-                                <!--android:text="本地音乐"-->
-                                <!--android:textSize="22dp" />-->
-
-                            <!--<TextView-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:text="0" />-->
-
-                            <!--<ImageView-->
-                                <!--android:layout_width="30dp"-->
-                                <!--android:layout_height="30dp"-->
-                                <!--android:scaleType="fitXY"-->
-                                <!--android:src="@drawable/right" />-->
-                        <!--</TableRow>-->
-                    <!--</TableLayout>-->
-
-                    <include layout="@layout/main_above_tablayout"/>
-
-                    <View
-                        android:layout_width="fill_parent"
-                        android:layout_height="5dp"
-                        android:background="#55bbbbbb" />
+                    <include layout="@layout/main_above_tablayout" />
 
                     <TableLayout
+                        android:id="@+id/main_myMusicForm"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/btn_selector"
                         android:collapseColumns="3"
-                        android:padding="5dp"
                         android:stretchColumns="0">
 
-                        <TableRow android:gravity="center">
+                        <TableRow
+                            android:layout_margin="5dp"
+                            android:gravity="center">
 
                             <TextView
                                 android:layout_width="fill_parent"
@@ -162,13 +52,15 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="4" />
+                                android:text="4"
+                                android:textSize="@dimen/textsize_12" />
 
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginRight="5dp"
                                 android:scaleType="fitXY"
-                                android:src="@drawable/right" />
+                                android:src="@drawable/right1" />
                         </TableRow>
                     </TableLayout>
 
@@ -181,10 +73,10 @@
                         android:id="@+id/musicFormListView"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_marginBottom="62dp"/>
+                        android:layout_marginBottom="62dp" />
                 </LinearLayout>
 
-                <include layout="@layout/main_playbar"/>
+                <include layout="@layout/main_playbar" />
             </RelativeLayout>
         </LinearLayout>
     </com.designers.kuwo.utils.MyHorizontalScollView>

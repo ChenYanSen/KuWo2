@@ -16,5 +16,9 @@
     <color name="red">#FFFF1826</color>
     <color name="music_sort_txt_color">#141414</color>
     <color name="music_sort_basic_color">#FFFFFF</color>
+    <color name="musicform_toolbar_color">#8A8A8A</color>
+    <color name="textcolor_white">#ffffff</color>
+    <color name="textcolor_black">#000000</color>
+    <color name="textcolor_white1">#F7F7F7</color>
 
 </resources>

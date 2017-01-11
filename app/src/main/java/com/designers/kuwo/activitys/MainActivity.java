@@ -25,7 +25,6 @@ import java.util.Map;
 
 
 /**
- *
  */
 
 public class MainActivity extends Activity implements View.OnClickListener {

@@ -33,7 +33,7 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
 		/**
 		 * 创建user表，用户的信息 ID 账号，密码  爱好  昵称  个性签名 性别 地区 头像
 		 */
-		String sql_user = "create table user(account varchar(20) primary key,Password varchar(20),hobby varchar(30),nickname varchar(20),signature txt,sex varchar(10),area varchar(50),avatar varchar(100))";
+		String sql_user = "create table user(account varchar(20) primary key,password varchar(20),hobby varchar(30),nickname varchar(20),signature txt,sex varchar(10),area varchar(50),avatarUri varchar(100))";
 		sqLiteDatabase.execSQL(sql_user);
 		/**
 		 * 创建音乐表， 歌名 歌手 存储路径 图片 歌词 详细信息

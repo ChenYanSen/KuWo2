@@ -14,7 +14,7 @@ public class CustomApplication extends Application{
     //用户账号
     private String current_user;
     //用户头像地址
-    private Uri imageUri;
+    private Uri avatarUri;
 
 
     @Override
@@ -28,13 +28,15 @@ public class CustomApplication extends Application{
         Log.i("test", "数据库创建完毕");
         super.onCreate();
     }
-    public Uri getImageUri() {
-        return imageUri;
+
+    public Uri getAvatarUri() {
+        return avatarUri;
     }
 
-    public void setImageUri(Uri imageUri) {
-        this.imageUri = imageUri;
+    public void setAvatarUri(Uri avatarUri) {
+        this.avatarUri = avatarUri;
     }
+
     public String getCurrent_user() {
         return current_user;
     }

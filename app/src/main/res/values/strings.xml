@@ -9,4 +9,28 @@
     <string name="recent">专辑</string>
     <string name="folder">文件夹</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="personal_infor_set_account">账号</string>
+    <string name="personal_infor_set_password">密码</string>
+    <string name="personal_infor_set_miss_password">忘记密码</string>
+    <string name="personal_infor_set_nickName">昵称</string>
+    <string name="personal_infor_set_name_edit">编辑</string>
+    <string name="persoanl_infor_set_name_signature">个性签名</string>
+    <string name="personal_infor_set_personal_hobby">爱好:</string>
+    <string name="personal_infor_set_fishing">钓鱼</string>
+    <string name="personal_infor_set_watch_movie">电影</string>
+    <string name="personal_infor_set_tourism">旅游</string>
+    <string name="peronsal_infor_set_runing">跑步</string>
+    <string name="personal_infor_set_persoal_sex">性别</string>
+    <string name="personal_infor_set_province">所在省</string>
+    <string name="personal_infor_set_city">所在市</string>
+    <string name="personal_infor_set_email">邮箱</string>
+    <string name="personal_infor_set_man">男</string>
+    <string name="personal_infor_set_woman">女</string>
+    <string name="personal_infor_set_area">地区</string>
+    <string name="title_activity_personal_infor_set">PersonalInforSetActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_register">Register</string>
+    <string name="title_activity_waiting">Waiting</string>
+
+
 </resources>

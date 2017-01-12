@@ -38,7 +38,7 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
 		/**
 		 * 创建音乐表，
 		 */
-		String sql_songs = "create table songs(songId integer primary key autoincrement,songName varchar(20),singer varchar(20),songUri varchar(30),songImage varchar(100)，information varchar(50))";
+		String sql_songs = "create table songs(songId integer primary key autoincrement,songName varchar(20),singer varchar(20),songUri varchar(30),songImage varchar(100)，singlyrics text，information varchar(50))";
 		sqLiteDatabase.execSQL(sql_songs);
 		/**
 		 * 创建collection表

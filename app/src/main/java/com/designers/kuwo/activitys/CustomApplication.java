@@ -11,15 +11,11 @@ import com.designers.kuwo.sqlite.SqLiteDatabaseHelper;
  * Created by 跃 on 2017/1/12.
  */
 public class CustomApplication extends Application{
+    //用户账号
     private String current_user;
+    //用户头像地址
     private Uri imageUri;
-    public Uri getImageUri() {
-        return imageUri;
-    }
 
-    public void setImageUri(Uri imageUri) {
-        this.imageUri = imageUri;
-    }
 
     @Override
     public void onCreate() {
@@ -32,7 +28,13 @@ public class CustomApplication extends Application{
         Log.i("test", "数据库创建完毕");
         super.onCreate();
     }
+    public Uri getImageUri() {
+        return imageUri;
+    }
 
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
+    }
     public String getCurrent_user() {
         return current_user;
     }

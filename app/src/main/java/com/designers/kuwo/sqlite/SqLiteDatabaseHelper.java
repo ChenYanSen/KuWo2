@@ -58,8 +58,13 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
 		/**
 		 * 创建播放列表  ID 歌名（参照音乐的歌名）
 		 */
-		String sql_playList = "create table playList(playList integer primary key autoincrement,palyListSongName varchar(20) references songs(songName))";
+		String sql_playList = "create table playList(playListId integer primary key autoincrement,palyListSongName varchar(20) references songs(songName))";
 		sqLiteDatabase.execSQL(sql_playList);
+		/**
+		 * 创建最近播放列表  ID 歌名（参照音乐的歌名）
+		 */
+		String sql_recentlyPlayed = "create table recentlyPlayed(recentlyPlayedId integer primary key autoincrement,recentlyPalyedSongName varchar(20) references songs(songName))";
+		sqLiteDatabase.execSQL(sql_recentlyPlayed);
 
 	}
 

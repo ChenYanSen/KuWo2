@@ -52,13 +52,9 @@ public class ProvinceCitySelectDialog extends Dialog implements View.OnClickList
         int windowHeight = outMetrics.heightPixels;
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.width = (int) (windowWidth * widthScale); // 宽度设置为屏幕的一定比例大小
-        // if (heightScale == 0) {
-        //   params.gravity = Gravity.CENTER;
-        // } else {
-        //  params.gravity = Gravity.TOP;
+
         params.gravity = Gravity.BOTTOM;
         params.y = (int) (windowHeight * heightScale); // 距离顶端高度设置为屏幕的一定比例大小
-        // }
         getWindow().setAttributes(params);
         txt_cancel= (TextView) findViewById(R.id.txt_cancel);
         mProvinceTextView= (TextView) findViewById(R.id.mProvinceTextView);

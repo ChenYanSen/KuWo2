@@ -182,7 +182,7 @@ public class ActionSheetDialog implements View.OnClickListener{
                 textView.setTextColor(Color.parseColor(color.getName()));
             }
 
-            // 高度
+            // 高度变化
             float scale = context.getResources().getDisplayMetrics().density;
             int height = (int) (45 * scale + 0.5f);
             textView.setLayoutParams(new LinearLayout.LayoutParams(

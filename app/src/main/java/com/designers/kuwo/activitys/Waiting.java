@@ -18,7 +18,7 @@ public class Waiting extends Activity {
         setContentView(R.layout.activity_waiting);
 
 
-        //* 欢迎页
+        //* 欢迎页延迟
         new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {

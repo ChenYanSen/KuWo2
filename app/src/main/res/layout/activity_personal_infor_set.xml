@@ -18,12 +18,13 @@
         android:layout_height="80dp"
         android:orientation="horizontal">
 
-        <ImageView
+        <com.designers.kuwo.utils.CircularImage
             android:id="@+id/avatar_image"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="top"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:scaleType="fitXY"/>
 
         <LinearLayout
             android:layout_width="150dp"

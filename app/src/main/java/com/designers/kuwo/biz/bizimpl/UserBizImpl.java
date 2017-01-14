@@ -36,7 +36,7 @@ public class UserBizImpl implements UserBiz {
         }finally {
             sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
         }
-        return false;
+        return flag;
     }
           //注册
     @Override
@@ -60,5 +60,59 @@ public class UserBizImpl implements UserBiz {
         }
 
         return flag;
+    }
+
+    @Override
+    public boolean LoginFind(Context context, User user) {
+        //获取数据库连接
+        SQLiteDatabase sqLiteDatabase=sqLiteDatabaseManager.getDatabaseByRead(context);
+        try {
+            flag=userDao.LoginSelect(user,sqLiteDatabase);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
+        }
+        return flag;
+    }
+    //添加个人信息
+    @Override
+    public boolean AlterPersonalInfor(String account, User user, Context context) {
+        //获取数据库连接
+        SQLiteDatabase sqLiteDatabase=sqLiteDatabaseManager.getDatabaseByRead(context);
+        //开启事务
+        TransactionManager transactionManager=new TransactionManager();
+        transactionManager.beginTransaction(sqLiteDatabase);
+        try {
+            flag = userDao.alterUserInfor(user,account,sqLiteDatabase);
+            if(flag)
+            {
+                transactionManager.commitTransaction(sqLiteDatabase);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            transactionManager.endTransaction(sqLiteDatabase);
+            sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
+        }
+        return flag;
+    }
+          //查询显示个人信息
+    @Override
+    public User displayPersonalInfro(String account, Context context) {
+        User user=new User();
+        SQLiteDatabase sqLiteDatabase=sqLiteDatabaseManager.getDatabaseByRead(context);
+        try {
+           user=userDao.selectUserInfor(account,sqLiteDatabase);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
+        }
+        if(user==null)
+        {
+            return null;
+        }
+        return user;
     }
 }

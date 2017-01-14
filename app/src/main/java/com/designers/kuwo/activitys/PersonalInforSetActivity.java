@@ -3,21 +3,33 @@ package com.designers.kuwo.activitys;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.designers.kuwo.R;
+import com.designers.kuwo.biz.UserBiz;
+import com.designers.kuwo.biz.bizimpl.UserBizImpl;
+import com.designers.kuwo.entity.User;
+import com.designers.kuwo.utils.CircularImage;
 import com.designers.kuwo.utils.StatusBarCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,9 +43,12 @@ public class PersonalInforSetActivity extends Activity {
     private TextView personal_hobby_edit;
     private TextView personal_sex_set;
     private TextView personal_area_edit;
+    private CircularImage avatar_image;
     private int sexindex = 0;
     private TextView mProvinceTextView, mDistinguishTextView, mCityTextView;
-
+    private ImageView back;
+    //头像路径
+    private Uri avatarUri;
     //省市级联
     private ArrayList<String> mProvinceList;
     private ArrayList<String> mCityList;
@@ -51,7 +66,12 @@ public class PersonalInforSetActivity extends Activity {
         this.mProvinceTextView = (TextView) findViewById(R.id.mProvinceTextView);
         this.mDistinguishTextView = (TextView) findViewById(R.id.mDistinguishTextView);
         this.mCityTextView = (TextView) findViewById(R.id.mCityTextView);
-
+        this.avatar_image= (CircularImage) findViewById(R.id.avatar_image);
+        this.back= (ImageView) findViewById(R.id.back);
+        //圆头像
+        Bitmap bitMap = BitmapFactory.decodeResource(this.getResources(), R.drawable.login_image);
+        this.avatar_image.setImageBitmap(bitMap);
+       // this.avatar_image.setImageResource(R.drawable.login_image);
         this.personal_name_signature_edit = (TextView) findViewById(R.id.personal_name_signature_edit);
         this.signature_tv = (TextView) findViewById(R.id.signature_tv);
         this.personal_nike_name_edit = (TextView) findViewById(R.id.personal_nike_name_edit);
@@ -92,7 +112,6 @@ public class PersonalInforSetActivity extends Activity {
         });
         //个性签名点击事件
         this.personal_signature.setOnClickListener(x -> {
-
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View view = LayoutInflater.from(PersonalInforSetActivity.this).inflate(R.layout.activity_personal_nake_set, null);
             final EditText personal_nake_input = (EditText) view.findViewById(R.id.personal_nake_input);
@@ -179,7 +198,6 @@ public class PersonalInforSetActivity extends Activity {
                 DialogShow(mCityList, 2, "选择市");
             }
         });
-
 //选择地区
         this.mDistinguishTextView.setOnClickListener(x -> {
             if (distinguish) {
@@ -187,18 +205,26 @@ public class PersonalInforSetActivity extends Activity {
             }
         });
 
+        this.back.setOnClickListener(x -> {
+            //往数据库中添加个人信息
+            User user=new User();
+            user.setNickname(personal_nike_name_edit.getText().toString().trim());
+           // user.setAvatarUri();
+            UserBiz userBiz=new UserBizImpl();
+
+            startActivity(new Intent(PersonalInforSetActivity.this, MainActivity.class));
+        });
+        this.avatar_image.setOnClickListener(x->{
+            selectedSDImage();
+        });
         StatusBarCompat.compat(this);
-
     }
-
     //数据装配省市
-
     /* 显示省市区的dialog */
     public void DialogShow(final ArrayList<String> mList, final int type, String str) {
         ActionSheetDialog dialog = new ActionSheetDialog(PersonalInforSetActivity.this)
                 .builder().setTitle(str).setCancelable(false)
                 .setCanceledOnTouchOutside(false);
-
         for (int i = 0; i < mList.size(); i++) {
             final String item = mList.get(i);
             final int position = i;
@@ -232,7 +258,6 @@ public class PersonalInforSetActivity extends Activity {
 
     }
     //---------------
-
     /* 得到省 */
     private ArrayList<String> getProvinceData() {
         // TODO Auto-generated method stub
@@ -296,8 +321,6 @@ public class PersonalInforSetActivity extends Activity {
         }
         return mList;
     }
-
-
     /* 得到区 */
     public ArrayList<String> getDistinguish() {
         JSONObject areaObject = null;
@@ -321,4 +344,42 @@ public class PersonalInforSetActivity extends Activity {
     }
 
 
+
+
+    /**
+     * 自定义方法：使用Intent调用系统提供的相册功能，使用startActivityForResult获取用户选择的照片图片
+     * */
+    private void selectedSDImage() {
+        Intent intentAlbum = new Intent(Intent.ACTION_GET_CONTENT);
+        intentAlbum.setType("image/*");
+        startActivityForResult(intentAlbum, 200);
+    }
+
+    // 从写onActivityResult系统方法，获取读取到的图片数据，并绑定到ImageView组件上
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        // 外界的程序访问ContentProvider所提供数据 可以通过ContentResolver接口
+        ContentResolver cenContentResolver = getContentResolver();
+        Bitmap bitMap = null;
+        // 判断用于接受的Activity
+        if (requestCode == 200) {
+            avatarUri = data.getData();// 获取图片uri
+            try {
+                bitMap = MediaStore.Images.Media.getBitmap(cenContentResolver,
+                        avatarUri);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            this.avatar_image.setImageBitmap(bitMap);
+        }
+    }
 }

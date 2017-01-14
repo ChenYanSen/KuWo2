@@ -70,7 +70,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         main_music_btn.setOnClickListener(this);
         main_recent_btn.setOnClickListener(this);
         main_myMusicForm.setOnClickListener(this);
-
+        menu_photo_imgview.setOnClickListener(this);
         main_photo_imgview.setImageResource(R.drawable.playbarimg);
         main_music_imgview.setImageResource(R.drawable.img1);
         main_like_imgview.setImageResource(R.drawable.img2);
@@ -143,6 +143,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.main_myMusicForm:
                 intent = new Intent(this, MusicFormActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.menu_photo_imgview:
+                intent=new Intent(this,PersonalInforSetActivity.class);
+                startActivity(intent);
+                finish();
                 break;
         }
     }

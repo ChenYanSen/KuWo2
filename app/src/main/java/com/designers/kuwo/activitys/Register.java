@@ -1,6 +1,7 @@
 package com.designers.kuwo.activitys;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,35 +19,50 @@ public class Register extends Activity {
    private EditText register_edtUserName;
     private EditText register_edtPassword,register_edtPassword_second;
     private Button register_Register;
+    boolean flag=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         this.register_edtUserName= (EditText) findViewById(R.id.register_edtUserName);
-        this.register_edtPassword= (EditText) findViewById(R.id.register_edtUserName);
+        this.register_edtPassword= (EditText) findViewById(R.id.register_edtPassword);
         this.register_edtPassword_second= (EditText) findViewById(R.id.register_edtPassword_second);
         this.register_Register= (Button) findViewById(R.id.register_Register);
         this.register_Register.setOnClickListener(x->{
-            String account=register_edtUserName.getText().toString().trim();
+            //开启数据库
+            UserBiz userBiz=new UserBizImpl();
+            User user=new User();
+           String msg="";
+            boolean registerFlag=false;
             String password=register_edtPassword.getText().toString().trim();
             String passwordSecond=register_edtPassword_second.getText().toString().trim();
-            if(passwordSecond.equals(password)){
-                UserBiz userBiz=new UserBizImpl();
-                User user=new User();
-                user.setAccount(account);
-                user.setPassword(password);
-                boolean flag;
-                flag=userBiz.userExists(Register.this,account);
-                if(!flag){
-                    flag=userBiz.register(Register.this, user);
-                    if(flag){
-                        showCustomToast("注册成功！");
-                    }else {
-                        showCustomToast("账号已存在");
-                    }
-                }
+          String   account=register_edtUserName.getText().toString().trim();
+            user.setAccount(account);
+            user.setPassword(password);
+           // new Thread(()->{
+                flag=userBiz.userExists(Register.this, account);
+          //  });
+            if(account.length()==0||"".equals(account)){
+              msg="账号不能为空";
+            } else if(flag) {
+              msg="账号已存在";
+            } else if(password.length()==0||"".equals(password)){
+                msg="密码不能为空";
+            }else if(passwordSecond.length()==0||"".equals(passwordSecond)){
+                msg="确认密码不能为空";
+            }else if(!passwordSecond.equals(password)){
+                msg="密码不一致";
             }else {
-                showCustomToast("两次输入密码不一致");
+                registerFlag=true;
+            }
+            showCustomToast(msg);
+            if(!flag&&registerFlag){
+         //  new Thread(()->{
+               userBiz.register(Register.this,user);
+          // });
+                showCustomToast("注册成功");
+                startActivity(new Intent(Register.this, MainActivity.class));
+                finish();
             }
 
 

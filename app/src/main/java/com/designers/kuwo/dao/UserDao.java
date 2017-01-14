@@ -19,4 +19,9 @@ public interface UserDao {
 
     //用户注册
     public boolean insertUser(final User user,final SQLiteDatabase sqLiteDatabase)throws SQLException;
+    //用户验证登录
+    public boolean LoginSelect(final User user,final SQLiteDatabase sqLiteDatabase)throws SQLException;
+    //添加用户个人信息
+    public boolean alterUserInfor(final User user,final String account,SQLiteDatabase sqLiteDatabase)throws SQLException;
+    public User    selectUserInfor(final String account,SQLiteDatabase sqLiteDatabase)throws SQLException;
 }

@@ -98,10 +98,14 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
                 "songUri varchar(50)," +
                 "primary key(songName,singer))";
         sqLiteDatabase.execSQL(sql_recentlyPlayed);
-
-
+        /**
+         * 创建音乐视频播放列表
+         */
+        String sql_videoPlay="create table videoPlay(videoName varchar (20),"+
+                    "videoUri varchar(50),"+
+                "primary key(videoName,videoUri))";
+        sqLiteDatabase.execSQL(sql_videoPlay);
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int arg1, int arg2) {
         // TODO Auto-generated method stub

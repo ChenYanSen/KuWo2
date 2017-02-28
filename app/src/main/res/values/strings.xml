@@ -35,5 +35,10 @@
     <string name="register_password_input">请输入密码</string>
     <string name="register_password_second">确认入密码</string>
     <string name="register_register">注册</string>
+    <string name="txt_hide_01">新建</string>
+    <string name="txt_hide_02">删除</string>
+    <string name="txt_hide_03">分享</string>
+    <string name="txt_hide_04">歌曲信息</string>
+    <string name="txt_hide_05">收藏</string>
 
 </resources>

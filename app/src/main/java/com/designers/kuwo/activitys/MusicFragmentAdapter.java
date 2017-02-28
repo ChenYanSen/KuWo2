@@ -26,6 +26,4 @@ public class MusicFragmentAdapter extends FragmentPagerAdapter{
     public int getCount() {
         return fragmentList.size();
     }
-    //**********************//
-
 }

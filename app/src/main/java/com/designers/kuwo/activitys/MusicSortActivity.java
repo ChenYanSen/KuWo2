@@ -1,6 +1,7 @@
 package com.designers.kuwo.activitys;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,10 +18,18 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.designers.kuwo.R;
+import com.designers.kuwo.utils.StatusBarCompat;
+
 import java.util.ArrayList;
 
 public class MusicSortActivity extends FragmentActivity {
+
+    //返回键
+    private ImageView imgMenuBar;
+    //中间字
+    private TextView txtMenuBar;
 
     //单曲
     private TextView txtSingle;
@@ -63,6 +72,9 @@ public class MusicSortActivity extends FragmentActivity {
         setContentView(R.layout.activity_music_sort);
         context = this;
 
+        //设置全屏
+        StatusBarCompat.compat(this);
+
         //初始化TextView
         InitTextView();
 
@@ -74,6 +86,18 @@ public class MusicSortActivity extends FragmentActivity {
 
         //初始化ViewPager
         InitViewPager();
+
+        this.imgMenuBar = (ImageView) findViewById(R.id.imgMenuBar);
+        this.txtMenuBar = (TextView) findViewById(R.id.txtMenuBar);
+
+        this.imgMenuBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicSortActivity.this, MusicSortActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -111,7 +135,7 @@ public class MusicSortActivity extends FragmentActivity {
     }
 
     /**
-     *  init pagerTab content
+     * init pagerTab content
      */
     private void InitViewPager() {
 
@@ -127,7 +151,7 @@ public class MusicSortActivity extends FragmentActivity {
 
         //将顶部文字恢复默认值
         resetTextViewTextColor();
-        txtSingle.setTextColor(getResources().getColor(R.color.red));
+        txtSingle.setTextColor(getResources().getColor(R.color.colorPrimary));
 
         //设置viewpager页面滑动监听事件
         vPager.setOnPageChangeListener(new MFOnPageChangeListener());
@@ -174,6 +198,7 @@ public class MusicSortActivity extends FragmentActivity {
 
 
     }
+
     /**
      * 头标点击监听
      */
@@ -211,17 +236,17 @@ public class MusicSortActivity extends FragmentActivity {
                     if (currIndex == 1) {
                         animation = new TranslateAnimation(position_one, 0, 0, 0);
                         resetTextViewTextColor();
-                        txtSingle.setTextColor(getResources().getColor(R.color.red));
+                        txtSingle.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 2) {
                         //  page3 -> page1
                         animation = new TranslateAnimation(position_two, 0, 0, 0);
                         resetTextViewTextColor();
-                        txtSingle.setTextColor(getResources().getColor(R.color.red));
+                        txtSingle.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 3) {
                         //  page4 -> page1
                         animation = new TranslateAnimation(position_three, 0, 0, 0);
                         resetTextViewTextColor();
-                        txtSingle.setTextColor(getResources().getColor(R.color.red));
+                        txtSingle.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                     break;
                 //当前为页卡2
@@ -230,17 +255,17 @@ public class MusicSortActivity extends FragmentActivity {
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(offset, position_one, 0, 0);
                         resetTextViewTextColor();
-                        txtSinger.setTextColor(getResources().getColor(R.color.red));
+                        txtSinger.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 2) {
                         //  page3 -> page2
-                        animation = new TranslateAnimation(position_two,position_one, 0, 0);
+                        animation = new TranslateAnimation(position_two, position_one, 0, 0);
                         resetTextViewTextColor();
-                        txtSinger.setTextColor(getResources().getColor(R.color.red));
+                        txtSinger.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 3) {
                         //  page4 -> page2
-                        animation = new TranslateAnimation(position_three,position_one, 0, 0);
+                        animation = new TranslateAnimation(position_three, position_one, 0, 0);
                         resetTextViewTextColor();
-                        txtSinger.setTextColor(getResources().getColor(R.color.red));
+                        txtSinger.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                     break;
                 //当前为页卡3
@@ -249,17 +274,17 @@ public class MusicSortActivity extends FragmentActivity {
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(offset, position_two, 0, 0);
                         resetTextViewTextColor();
-                        txtAlbum.setTextColor(getResources().getColor(R.color.red));
+                        txtAlbum.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 1) {
                         //  page2 -> page3
                         animation = new TranslateAnimation(position_one, position_two, 0, 0);
                         resetTextViewTextColor();
-                        txtAlbum.setTextColor(getResources().getColor(R.color.red));
+                        txtAlbum.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 3) {
                         //  page4 -> page3
                         animation = new TranslateAnimation(position_three, position_two, 0, 0);
                         resetTextViewTextColor();
-                        txtAlbum.setTextColor(getResources().getColor(R.color.red));
+                        txtAlbum.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                     break;
                 //当前为页卡4
@@ -268,17 +293,17 @@ public class MusicSortActivity extends FragmentActivity {
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(offset, position_three, 0, 0);
                         resetTextViewTextColor();
-                        txtFolder.setTextColor(getResources().getColor(R.color.red));
+                        txtFolder.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 1) {
                         //   page2 -> page4
                         animation = new TranslateAnimation(position_one, position_three, 0, 0);
                         resetTextViewTextColor();
-                        txtFolder.setTextColor(getResources().getColor(R.color.red));
+                        txtFolder.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 2) {
                         //   page3 -> page4
                         animation = new TranslateAnimation(position_three, position_three, 0, 0);
                         resetTextViewTextColor();
-                        txtFolder.setTextColor(getResources().getColor(R.color.red));
+                        txtFolder.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                     break;
 
@@ -320,11 +345,10 @@ public class MusicSortActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.menu_music_sort, menu);
+        getMenuInflater().inflate(R.menu.menu_music_sort, menu);
         return true;
     }
 
-    /*hahaha*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -333,4 +357,5 @@ public class MusicSortActivity extends FragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

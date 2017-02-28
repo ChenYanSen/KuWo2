@@ -1,9 +1,38 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="com.designers.kuwo.activitys.SingerFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/music_sort_basic_color"
+    tools:context="com.designers.kuwo.activitys.SingerFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="ILikeFragment" />
+    <ListView
+        android:id="@+id/listViewSinger"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="58dp" />
+
+    <TextView
+        android:id="@+id/float_letter"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:background="@color/music_sort_hide_bg"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:visibility="gone" />
+
+    <!--<com.designers.kuwo.utils.SlideBar
+        android:id="@+id/sliderBar"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"/>-->
+    <LinearLayout
+        android:id="@+id/sliderBar2"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="right"
+        android:background="#d7d7d7"
+        android:gravity="center"
+        android:orientation="vertical" />
 
 </FrameLayout>

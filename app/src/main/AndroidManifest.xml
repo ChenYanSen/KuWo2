@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
-        android:name=".activitys.CustomApplication"
+        android:name=".utils.CustomApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,11 +34,24 @@
         <activity
             android:name=".activitys.Waiting"
             android:label="@string/title_activity_waiting">
+        </activity>
+
+        <activity
+            android:name=".activitys.MusicSortActivity"
+            android:label="@string/title_activity_music_sort"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activitys.MusicSingerPageActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+        </activity>
+
+        <activity android:name=".activitys.MusicAlbumPageActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar"/>
     </application>
 </manifest>

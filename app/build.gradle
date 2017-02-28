@@ -26,4 +26,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile files('src/main/libs/gson-2.2.4.jar')
+    compile 'com.belerweb:pinyin4j:2.5.1'
 }

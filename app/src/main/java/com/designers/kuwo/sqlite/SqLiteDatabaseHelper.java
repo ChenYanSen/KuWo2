@@ -59,7 +59,7 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
                 "account varchar(20) references user(account))";
         sqLiteDatabase.execSQL(sql_album);
 
-        //albumId INTEGER PRIMARY KEY autoincrement," + "
+        //albumId INTEGER PRIMARY KEY autoincrement," + "、、
         //2017/2/21�ս�songUri ��Ϊ albumUri   ��
 
         /**

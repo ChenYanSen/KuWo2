@@ -19,6 +19,9 @@
     <color name="music_sort_hide_bg">#8daac3</color>
     <color name="personal_infor_set_signature">#E492C3</color>
     <color name="persinal_infor_color">#1296db</color>
+    <color name="state_pressed">#1296db</color>
+    <color name="state_selected">#77f7e472</color>
+    <color name="state_focused">#ffffff</color>
     <color name="textcolor_white">#ffffff</color>
     <color name="textcolor_black">#000000</color>
     <color name="textcolor_white1">#F7F7F7</color>
@@ -26,4 +29,6 @@
     <color name="musicform_viewpager_color">#ffffff</color>
     <color name="musicform_listitem_color1">#208A8A8A</color>
     <color name="musicform_listitem_color2">#508A8A8A</color>
+    <color name="musicsort_indexview_color">#44000000</color>
+    <color name="theme_color">#bbeeeeee</color>
 </resources>

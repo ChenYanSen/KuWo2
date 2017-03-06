@@ -1,82 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="62dp"
-    android:layout_alignParentBottom="true"
-    android:background="#00ffffff"
-    android:gravity="bottom">
+    android:layout_height="55dp"
+    android:layout_alignParentBottom="true">
 
-
-    <View
+    <TableLayout
         android:layout_width="fill_parent"
-        android:layout_height="5dp"
-        android:background="@drawable/playbar_topline"/>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="57dp"
-        android:layout_alignParentBottom="true"
-        android:background="#ffffff"
+        android:layout_height="fill_parent"
+        android:collapseColumns="5"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingLeft="58dp">
+        android:stretchColumns="1">
 
-        <com.designers.kuwo.utils.MySeekBar
-            android:layout_width="fill_parent"
-            android:layout_height="20dp"
-            android:max="100"/>
+        <TableRow android:gravity="center">
 
-        <TableLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:collapseColumns="4"
-            android:stretchColumns="0">
+            <ImageView
+                android:id="@+id/playimg"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/musicformimg" />
 
-            <TableRow
-                android:gravity="center">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/playbar_songName"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="5dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="当-林俊杰"
-                    android:textSize="16sp"
-                    android:textColor="#000000"/>
+                    android:text="告白气球"
+                    android:textColor="@color/textcolor_black"
+                    android:textSize="@dimen/textsize_16" />
 
-                <ImageButton
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginBottom="2dp"
-                    android:background="@drawable/music_play_imgbtn"
-                    android:scaleType="fitXY" />
+                <TextView
+                    android:id="@+id/playbar_singer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="周杰伦"
+                    android:textSize="@dimen/textsize_12" />
+            </LinearLayout>
 
-                <ImageButton
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginRight="9dp"
-                    android:layout_marginBottom="2dp"
-                    android:background="@drawable/music_next_imgbtn"
-                    android:scaleType="fitXY" />
+            <ImageView
+                android:id="@+id/playlist_menu"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/playlist" />
 
-                <ImageButton
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="2dp"
-                    android:background="@drawable/music_list_imgbtn"
-                    android:scaleType="fitXY" />
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/playbar_play"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/play" />
 
+            <ImageView
+                android:id="@+id/playbar_next"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/next" />
+        </TableRow>
+    </TableLayout>
 
-    <com.designers.kuwo.utils.CircularImage
-        android:id="@+id/playbar_img_imgview"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_margin="3dp" />
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="fill_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="51dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:thumb="@null" />
 </RelativeLayout>

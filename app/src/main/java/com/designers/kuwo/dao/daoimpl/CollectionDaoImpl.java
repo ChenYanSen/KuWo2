@@ -1,51 +1,58 @@
 package com.designers.kuwo.dao.daoimpl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
 import com.designers.kuwo.dao.CollectionDao;
-import com.designers.kuwo.entity.ICollection;
-import com.designers.kuwo.entity.Song;
+import com.designers.kuwo.eneity.ICollection;
 import com.designers.kuwo.sqlite.SQLManager;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by 跃 on 2017/2/22.
- */
 public class CollectionDaoImpl implements CollectionDao {
 
-    private boolean flag = false;
     private SQLManager sqlManager;
-
     public CollectionDaoImpl() {
         this.sqlManager = new SQLManager();
     }
 
     /**
      * 添加收藏
-     *
      * @param iCollection
      * @param sqLiteDatabase
      * @return
      * @throws SQLException
      */
     @Override
-    public boolean insertCollection(ICollection iCollection, SQLiteDatabase sqLiteDatabase) throws SQLException {
-        String singer = iCollection.getSinger();
-        String songName = iCollection.getSongName();
-        String account = iCollection.getAccount();
-        String sql = "insert into collection(SongName,singer,account) values(?,?,?)";
-        Log.i("数据库操作:", sql);
-        String[] bindArgs = new String[]{songName, singer, account};
-        flag = sqlManager.execWrite(sqLiteDatabase, sql, bindArgs);
-        Log.i("数据库操作：", "dao层执行了   insertCollection    。。。。flag=" + flag);
-        return flag;
-    }
+    public void insertCollection(ICollection iCollection, SQLiteDatabase sqLiteDatabase) throws SQLException {
 
+        String songName = iCollection.getSongName();
+        String singer = iCollection.getSinger();
+        String account = iCollection.getAccount();
+        String songUri = iCollection.getSongUri();
+        byte[] songImage = iCollection.getSongImage();
+        String singlyrics = iCollection.getSinglyrics();
+        String time = iCollection.getTime();
+        String information = iCollection.getInformation();
+        String folder = iCollection.getFolder();
+        String rank = iCollection.getRank();
+
+        ContentValues values = new ContentValues();
+        values.put("songName", songName);
+        values.put("singer", singer);
+        values.put("songUri", songUri);
+        values.put("songImage", songImage);
+        values.put("singLyrics", singlyrics);
+        values.put("information", information);
+        values.put("time", time);
+        values.put("rank", rank);
+        values.put("folder", folder);
+        values.put("account", account);
+        long collection = sqLiteDatabase.insert("collection", null, values);
+        Log.i("数据库操作执行添加收藏。。。。。", "insert=========:" + collection);
+    }
 
     /**
      * 根据用户信息及歌曲，歌手删除收藏
@@ -58,17 +65,14 @@ public class CollectionDaoImpl implements CollectionDao {
      * @throws SQLException
      */
     @Override
-    public boolean deleteCollection(String song, String singer, String account, SQLiteDatabase sqLiteDatabase) throws SQLException {
+    public void deleteCollection(String song, String singer, String account, SQLiteDatabase sqLiteDatabase) throws SQLException {
         String sql = "delete from collection where songName=? and singer=? and account= ?";
         String[] bindArgs = new String[]{song, singer, account};
-        flag = sqlManager.execWrite(sqLiteDatabase, sql, bindArgs);
-        Log.i("数据库操作：", "dao层执行了   deleteCollection   。。。。flag=" + flag);
-        return flag;
+        sqlManager.execWrite(sqLiteDatabase, sql, bindArgs);
     }
 
     /**
      * 判断是否收藏
-     *
      * @param song
      * @param singer
      * @param account
@@ -78,7 +82,8 @@ public class CollectionDaoImpl implements CollectionDao {
      */
     @Override
     public boolean selectCollection(String song, String singer, String account, SQLiteDatabase sqLiteDatabase) throws SQLException {
-        String sql = "select * from collection where SongName=? and singer=? and account=?";
+        boolean flag =false;
+        String sql = "select * from collection where songName=? and singer=? and account=?";
         String[] bindArgs = new String[]{song, singer, account};
         Cursor cursor = sqlManager.execRead(sqLiteDatabase, sql, bindArgs);
         if (cursor.moveToNext()) {
@@ -91,55 +96,26 @@ public class CollectionDaoImpl implements CollectionDao {
     }
 
     @Override
-    public List<Song> selectCollectionByName(SQLiteDatabase sqLiteDatabase, String songName, String singer) {
-        List<Song> collectSongList = new ArrayList<Song>();
-        String sql =
-                "select collection.songName,collection.singer,songs.singerUri，songs.songUri，songs.songImage，songs.singlyrics，songs.albumUri，" +
-                        "songs.time，songs.information，songs.folder" +
-                        "from collection inner join songs on collection.SongName=songs.songName and collection.singer=songs.singer where collection.SongName=? and collection.singer=?";
-        String selectionArgs[] = new String[]{songName, singer};
-        Cursor cursor = sqlManager.execRead(sqLiteDatabase, sql, selectionArgs);
+    public List<ICollection> selectCollectionAllSongs(SQLiteDatabase sqLiteDatabase) throws SQLException {
+        List<ICollection> collectionAllList = new ArrayList<ICollection>();
+        String sql = "select songName,singer,songUri,songImage,singLyrics,time,information,folder,rank from collection";
+        Log.i("查询收藏列表中的歌曲。。。。。", "收藏:sql" + sql);
+        String[] selectionArgs = new String[]{};
+        Cursor cursor = sqlManager.execRead(sqLiteDatabase,sql,selectionArgs);
         while (cursor.moveToNext()) {
-            Song song = new Song();
-            song.setSongName(cursor.getString(0));
-            song.setSinger(cursor.getString(1));
-            song.setSingerUri(cursor.getString(2));
-            song.setSongUri(cursor.getString(3));
-            song.setSongImage(cursor.getString(4));
-            song.setSingLyrics(cursor.getString(5));
-            song.setAlbumUri(cursor.getString(6));
-            song.setTime(cursor.getString(7));
-            song.setInformation(cursor.getString(8));
-            song.setFolder(cursor.getString(9));
-            collectSongList.add(song);
+            ICollection collection = new ICollection();
+            collection.setSongName(cursor.getString(0));
+            collection.setSinger(cursor.getString(1));
+            collection.setSongUri(cursor.getString(2));
+            collection.setSongImage(cursor.getBlob(3));
+            collection.setSinglyrics(cursor.getString(4));
+            collection.setTime(cursor.getString(5));
+            collection.setInformation(cursor.getString(6));
+            collection.setFolder(cursor.getString(7));
+            collection.setRank(cursor.getString(8));
+            collectionAllList.add(collection);
         }
-        return collectSongList;
+        Log.i("查询收藏列表中的歌曲。。。。", collectionAllList.toString());
+        return collectionAllList;
     }
-
-    @Override
-    public List<Song> selectCollectionSortAll(SQLiteDatabase sqLiteDatabase) throws SQLException {
-        List<Song> collectSongList = new ArrayList<Song>();
-        String sql =
-                "SELECT collection.SongName,collection.singer,songs.singerUri,songs.songUri,songs.albumUri," +
-                        "songs.time,songs.folder " +
-                        "FROM songs INNER JOIN collection ON collection.SongName=songs.songName and collection.singer=songs.singer";
-        String selectionArgs[] = new String[]{};
-        Cursor cursor = sqlManager.execRead(sqLiteDatabase, sql, selectionArgs);
-        while (cursor.moveToNext()) {
-            Song song = new Song();
-            song.setSongName(cursor.getString(0));
-            song.setSinger(cursor.getString(1));
-            song.setSingerUri(cursor.getString(2));
-            song.setSongUri(cursor.getString(3));
-            //song.setSongImage(cursor.getString(4));
-            //song.setSingLyrics(cursor.getString(5));
-            song.setAlbumUri(cursor.getString(4));
-            song.setTime(cursor.getString(5));
-            //song.setInformation(cursor.getString(8));
-            //song.setFolder(cursor.getString(7));
-            collectSongList.add(song);
-        }
-        return collectSongList;
-    }
-
 }

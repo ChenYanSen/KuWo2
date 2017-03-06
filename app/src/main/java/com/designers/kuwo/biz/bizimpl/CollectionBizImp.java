@@ -7,8 +7,7 @@ import android.util.Log;
 import com.designers.kuwo.biz.CollectionBiz;
 import com.designers.kuwo.dao.CollectionDao;
 import com.designers.kuwo.dao.daoimpl.CollectionDaoImpl;
-import com.designers.kuwo.entity.ICollection;
-import com.designers.kuwo.entity.Song;
+import com.designers.kuwo.eneity.ICollection;
 import com.designers.kuwo.sqlite.SQLiteDatabaseManager;
 import com.designers.kuwo.sqlite.TransactionManager;
 
@@ -19,7 +18,7 @@ import java.util.List;
  * Created by 跃 on 2017/2/22.
  */
 public class CollectionBizImp implements CollectionBiz {
-    private boolean flag = false;
+
     private SQLiteDatabaseManager sqLiteDatabaseManager;
     private CollectionDao collectionDao;
 
@@ -27,7 +26,6 @@ public class CollectionBizImp implements CollectionBiz {
         this.sqLiteDatabaseManager = new SQLiteDatabaseManager();
         this.collectionDao = new CollectionDaoImpl();
     }
-
     /**
      * 添加收藏
      *
@@ -36,7 +34,7 @@ public class CollectionBizImp implements CollectionBiz {
      * @return
      */
     @Override
-    public boolean alterCollection(ICollection iCollection, Context context) {
+    public void alterCollection(ICollection iCollection, Context context) {
 
         //获取数据库连接
         SQLiteDatabase sqLiteDatabase = sqLiteDatabaseManager.getDatabaseByRead(context);
@@ -44,21 +42,15 @@ public class CollectionBizImp implements CollectionBiz {
         TransactionManager transactionManager = new TransactionManager();
         transactionManager.beginTransaction(sqLiteDatabase);
         try {
-            flag = collectionDao.insertCollection(iCollection, sqLiteDatabase);
-            Log.i("数据库操作：", "biz层执行了插入收藏的操作。。。。flag=" + flag);
-            if (flag) {
-                transactionManager.commitTransaction(sqLiteDatabase);
-            }
+           this.collectionDao.insertCollection(iCollection, sqLiteDatabase);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            transactionManager.commitTransaction(sqLiteDatabase);
             transactionManager.endTransaction(sqLiteDatabase);
             sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
         }
-
-        return flag;
     }
-
     /**
      * 删除收藏
      *
@@ -69,26 +61,20 @@ public class CollectionBizImp implements CollectionBiz {
      * @return
      */
     @Override
-    public boolean removeCollection(String song, String singer, String account, Context context) {
-        //获取数据库连接
+    public void removeCollection(String song, String singer, String account, Context context) {
+
         SQLiteDatabase sqLiteDatabase = sqLiteDatabaseManager.getDatabaseByRead(context);
-        //开启事务
         TransactionManager transactionManager = new TransactionManager();
         transactionManager.beginTransaction(sqLiteDatabase);
         try {
-            flag = collectionDao.deleteCollection(song, singer, account, sqLiteDatabase);
-            Log.i("数据库操作：", "biz层执行了删除收藏的操作。。。。flag=" + flag);
-            if (flag) {
-                transactionManager.commitTransaction(sqLiteDatabase);
-            }
+            this.collectionDao.deleteCollection(song, singer, account, sqLiteDatabase);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            transactionManager.commitTransaction(sqLiteDatabase);
             transactionManager.endTransaction(sqLiteDatabase);
             sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
         }
-
-        return flag;
     }
 
     /**
@@ -102,7 +88,7 @@ public class CollectionBizImp implements CollectionBiz {
      */
     @Override
     public boolean findCollection(String song, String singer, String account, Context context) {
-        //获取数据库连接
+        boolean flag=false;
         SQLiteDatabase sqLiteDatabase = sqLiteDatabaseManager.getDatabaseByRead(context);
         try {
             flag = collectionDao.selectCollection(song, singer, account, sqLiteDatabase);
@@ -116,26 +102,11 @@ public class CollectionBizImp implements CollectionBiz {
     }
 
     @Override
-    public List<Song> findCollectionByName(Context context, String songName, String singer) {
+    public List<ICollection> findCollectionAllSongs(Context context) {
         SQLiteDatabase sqLiteDatabase = sqLiteDatabaseManager.getDatabaseByRead(context);
         try {
-
-            Log.i("数据库操作：", "biz层执行了查询收藏的操作    selectCollectionByName");
-            return collectionDao.selectCollectionByName(sqLiteDatabase, songName, singer);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
-        }
-    }
-
-    @Override
-    public List<Song> findCollectionSortAll(Context context) {
-        SQLiteDatabase sqLiteDatabase = sqLiteDatabaseManager.getDatabaseByRead(context);
-        try {
-            Log.i("数据库操作：", "biz层执行了查询收藏所有歌曲的操作    selectCollectionSortAll");
-            return collectionDao.selectCollectionSortAll(sqLiteDatabase);
+            Log.i("数据库操作：", "biz层执行了查询收藏所有歌曲的操作    selectCollectionAllSongs");
+            return this.collectionDao.selectCollectionAllSongs(sqLiteDatabase);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

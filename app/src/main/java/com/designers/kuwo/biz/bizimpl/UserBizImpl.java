@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.designers.kuwo.biz.UserBiz;
 import com.designers.kuwo.dao.UserDao;
 import com.designers.kuwo.dao.daoimpl.UserDaoImpl;
-import com.designers.kuwo.entity.User;
+import com.designers.kuwo.eneity.User;
 import com.designers.kuwo.sqlite.SQLiteDatabaseManager;
 import com.designers.kuwo.sqlite.TransactionManager;
 

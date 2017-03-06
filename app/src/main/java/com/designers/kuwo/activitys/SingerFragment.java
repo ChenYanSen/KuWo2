@@ -2,62 +2,45 @@ package com.designers.kuwo.activitys;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.designers.kuwo.R;
 import com.designers.kuwo.biz.SingerBiz;
 import com.designers.kuwo.biz.bizimpl.SingerBizImpl;
-import com.designers.kuwo.entity.Singer;
+import com.designers.kuwo.eneity.Singer;
 import com.designers.kuwo.utils.CircularImage;
-import com.designers.kuwo.utils.SlideBar;
+import com.designers.kuwo.utils.IndexView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 
 public class SingerFragment extends Fragment {
 
     private ListView listViewSinger;          //歌手listview组件
+    private TextView tv_word;            //漂浮的字符
+    private IndexView iv_words;
     private ListViewAdapter adapter;
-
-    //检索表
-    private SlideBar slideBar;                //右侧索引栏
-    private TextView float_letter;            //漂浮的字符
-    private List<Singer> indexSingers = new ArrayList<Singer>();
-    private List<Singer> newSingers = new ArrayList<Singer>();//新的序列
-
-    private HashMap<String, Integer> selector;//存放含有索引字母的位置
-    private LinearLayout layoutIndex;
-
-    private String[] indexStr = {"A", "B", "C", "D", "E", "F", "G",
-            "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-            "U", "V", "W", "X", "Y", "Z", "#"};
-
-    private int height;
-    private boolean flag = false;
-
     //数据库的操作的一些声明
     private SingerBiz singerBiz;
     private List<Singer> singerFindList;
 
+    private Handler handler = new Handler();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setData();
         //从数据库中读出来数据
         singerFindList = new ArrayList<Singer>();
         singerBiz = new SingerBizImpl();
@@ -67,8 +50,14 @@ public class SingerFragment extends Fragment {
             Log.i("Singers", "SingerFind:" + s.getSinger());
             Log.i("Singers", "SingerFind:" + s.getSongNum());
             Log.i("Singers", "SingerFind:" + s.getSongUri());
-            indexSingers.add(new Singer(s.getSinger(),s.getSongNum(),s.getSongUri()));//indexSingers里面存放了许多歌手，歌手的名字，头像，数目是知道的
         }
+        //排序
+        Collections.sort(singerFindList, new Comparator<Singer>() {
+            @Override
+            public int compare(Singer lhs, Singer rhs) {
+                return lhs.getPinyinName().compareTo(rhs.getPinyinName());
+            }
+        });
     }
 
     @Override
@@ -77,32 +66,18 @@ public class SingerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_singer, null);
         //歌手listview
         this.listViewSinger = (ListView) view.findViewById(R.id.listViewSinger);
-
-        //索引
-        this.layoutIndex = (LinearLayout) view.findViewById(R.id.sliderBar2);
-        this.layoutIndex.setBackgroundColor(Color.parseColor("#00ffffff"));
-        this.float_letter = (TextView) view.findViewById(R.id.float_letter);
-        this.float_letter.setVisibility(View.GONE);
-        String[] allNames = sortIndex(indexSingers);
-        SortList(allNames);
-
+        this.iv_words = (IndexView) view.findViewById(R.id.iv_words);
+        this.tv_word = (TextView) view.findViewById(R.id.tv_word);
+        tv_word.setVisibility(View.GONE);
+        //索引绑定监听器  设置监听字母下标索引的变化
+        iv_words.setOnIndexChangeListener(new MyOnIndexChangeListener());
         //歌手内容适配器
-
-        adapter = new ListViewAdapter(this.getActivity(), newSingers);
-
+        adapter = new ListViewAdapter(this.getActivity(),singerFindList);
+        //listview 绑定适配器
         this.listViewSinger.setAdapter(adapter);
-
-        //this.listViewSinger.setOnItemSelectedListener(new ItemClickEvent());
+        //listview 的监听器
         this.listViewSinger.setOnItemClickListener(new ItemClickEvent());
 
-        selector = new HashMap<String, Integer>();
-        for (int j = 0; j < indexStr.length; j++) {
-            for (int i = 0; i < newSingers.size(); i++) {
-                if (newSingers.get(i).getSinger().equals(indexStr[j])) {
-                    selector.put(indexStr[j], i);
-                }
-            }
-        }
         return view;
     }
 
@@ -112,10 +87,10 @@ public class SingerFragment extends Fragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //拿到position，跳转过去，将值传到布局中去
             //获取控件上的值
-            TextView tv= (TextView) view.findViewById(R.id.txtItemSinger);
-            String singer=tv.getText().toString();
+            TextView tv = (TextView) view.findViewById(R.id.txtItemSinger);
+            String singer = tv.getText().toString();
             Intent intent = new Intent(getActivity(), MusicSingerPageActivity.class);
-            intent.putExtra("tvsinger",singer);
+            intent.putExtra("tvsinger", singer);
             startActivity(intent);
         }
     }
@@ -127,7 +102,6 @@ public class SingerFragment extends Fragment {
         private List<Singer> list;
         private ViewHolder viewHolder;
         private LayoutInflater inflater;
-
         public ListViewAdapter(Context context, List<Singer> list) {
             this.context = context;
             this.list = list;
@@ -150,149 +124,79 @@ public class SingerFragment extends Fragment {
         }
 
         @Override
-        public boolean isEnabled(int position) {
-            if (list.get(position).getSinger().length() == 1)// 如果是字母索引
-                return false;// 表示不能点击
-            return super.isEnabled(position);
-        }
-
-        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            String item = list.get(position).getSinger();
-            viewHolder = new ViewHolder();
-            if (item.length() == 1) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.index,
-                        null);
-                viewHolder.indexTv = (TextView) convertView
-                        .findViewById(R.id.indexTv);
-            } else {
-                convertView = LayoutInflater.from(context).inflate(R.layout.item_singer,
-                        null);
-                viewHolder.itemTv = (TextView) convertView
-                        .findViewById(R.id.txtItemSinger);
+            if (null == convertView) {
+                convertView = inflater.inflate(R.layout.item_singer, null);
+                viewHolder = new ViewHolder();
+                viewHolder.itemTv = (TextView) convertView.findViewById(R.id.txtItemSinger);
                 viewHolder.txtItemSongNum = (TextView) convertView.findViewById(R.id.txtItemSongNum);
                 viewHolder.circularImageSinger = (CircularImage) convertView.findViewById(R.id.circularImageSinger);
-            }
-            if (item.length() == 1) {
-                viewHolder.indexTv.setText(list.get(position).getSinger());
+                viewHolder.tv_word = (TextView) convertView.findViewById(R.id.tv_word);
+                convertView.setTag(viewHolder);
             } else {
-                viewHolder.itemTv.setText(list.get(position).getSinger());
-                viewHolder.txtItemSongNum.setText(list.get(position).getSongNum()+" 首歌曲");
-                viewHolder.circularImageSinger.setImageResource(R.drawable.singers);
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            String name = list.get(position).getSinger();
+            String word = list.get(position).getPinyinName().substring(0, 1);
+            viewHolder.itemTv.setText(name);
+            viewHolder.tv_word.setText(word);
+            viewHolder.txtItemSongNum.setText(list.get(position).getSongNum() + " 首歌曲");
+            viewHolder.circularImageSinger.setImageResource(R.drawable.singers);
+            if (position == 0) {
+                viewHolder.tv_word.setVisibility(View.VISIBLE);
+            } else {
+                String preWord = list.get(position-1).getPinyinName().substring(0, 1);
+                if (word.equals(preWord)) {
+                    viewHolder.tv_word.setVisibility(View.GONE);
+                }else {
+                    viewHolder.tv_word.setVisibility(View.VISIBLE);
+                }
             }
             return convertView;
         }
 
         private class ViewHolder {
-            private TextView indexTv;
             private TextView itemTv, txtItemSongNum;
             CircularImage circularImageSinger;
+            private TextView tv_word;
         }
     }
 
-    //快速索引获取所有的名字集合，重新排序获得一个新的list集合
-    private void SortList(String[] allNames) {
-        for (int i = 0; i < allNames.length; i++) {
-            if (allNames[i].length() != 1) {
-                for (int j = 0; j < indexSingers.size(); j++) {
-                    if (allNames[i].equals(indexSingers.get(j).getPinyinName())) {
-                        Singer singer = new Singer(indexSingers.get(j).getSinger(), indexSingers.get(j).getPinyinName(),
-                                indexSingers.get(j).getSongNum(), indexSingers.get(j).getSingerUri());
-                        newSingers.add(singer);
-                    }
-                }
-            } else {
-                newSingers.add(new Singer(allNames[i]));
+    // 当触摸的字母发生改变，这里接到回传，重新设置TextView
+    class MyOnIndexChangeListener implements IndexView.OnIndexChangeListener {
+        @Override
+        public void onIndexChange(String word) {
+            updateWord(word);
+            updateListView(word); // A~Z
+        }
+    }
+
+    private void updateListView(String word) {
+        for (int i = 0; i < singerFindList.size(); i++) {
+            String listWord = singerFindList.get(i).getPinyinName().substring(0, 1); // LIUDEHUA->L
+            if (word.equals(listWord)) {
+                //i是listView中的位置
+                listViewSinger.setSelection(i); // 定位到ListView中的某个位置
+                return;
             }
         }
     }
 
-    public void onWindowFocusChanged(boolean hasFocus) {
-
-        if (!flag) {// 这里为什么要设置个flag进行标记，
-            height = layoutIndex.getMeasuredHeight() / indexStr.length;
-            getIndexView();
-            flag = true;
-        }
+    private void updateWord(String word) {
+        //显示
+        tv_word.setVisibility(View.VISIBLE);
+        tv_word.setText(word);
+        handler.removeCallbacksAndMessages(null);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //也是运行在主线程
+                //System.out.println(Thread.currentThread().getName() + "------------");
+                tv_word.setVisibility(View.GONE);
+            }
+        }, 500);
     }
 
-    //获取排序后的新数据
-    public String[] sortIndex(List<Singer> singer) {
-        TreeSet<String> set = new TreeSet<String>();
-        //获取初始化数据源中的首字母，添加到set中
-        for (Singer singer1 : indexSingers) {
-            set.add(PinYinUtils.getPinYinHeadChar(singer1.getSinger().substring(0, 1)));
-        }
-        //新数组的长度为元数据加上set的大小
-        String[] names = new String[indexSingers.size() + set.size()];
-        int i = 0;
-        for (String string : set) {
-            names[i] = string;
-            i++;
-        }
-
-        String[] pinYinNames = new String[indexSingers.size()];
-
-        for (int j = 0; j < indexSingers.size(); j++) {
-            indexSingers.get(j).setPinyinName(PinYinUtils.getPinYin(indexSingers.get(j).getSinger().toString()));
-            pinYinNames[j] = PinYinUtils.getPinYin(indexSingers.get(j).getSinger().toString());
-        }
-        //将原数据拷贝到新数据中
-        System.arraycopy(pinYinNames, 0, names, set.size(), pinYinNames.length);
-        //自动按照首字母排序
-        Arrays.sort(names, String.CASE_INSENSITIVE_ORDER);
-        return names;
-    }
-
-    //绘制索引列表
-
-    public void getIndexView() {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, height);
-        for (int i = 0; i < indexStr.length; i++) {
-            final TextView tv = new TextView(getActivity());
-            tv.setLayoutParams(params);
-            tv.setText(indexStr[i]);
-            tv.setPadding(10, 0, 10, 0);
-            layoutIndex.addView(tv);
-            layoutIndex.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    float y = event.getY();
-                    int index = (int) (y / height);
-                    if (index > -1 && index < indexStr.length) {//防止越界
-
-                        String key = indexStr[index];
-                        if (selector.containsKey(key)) {
-                            int pos = selector.get(key);
-                            if (listViewSinger.getHeaderViewsCount() > 0) {// 防止ListView有标题栏，本例中没有。
-                                listViewSinger.setSelectionFromTop(
-                                        pos + listViewSinger.getHeaderViewsCount(), 0);
-                            } else {
-                                listViewSinger.setSelectionFromTop(pos, 0);// 滑动到第一项
-                            }
-                            float_letter.setVisibility(View.VISIBLE);
-                            float_letter.setText(indexStr[index]);
-                        }
-                    }
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            layoutIndex.setBackgroundColor(Color
-                                    .parseColor("#606060"));
-                            break;
-
-                        case MotionEvent.ACTION_MOVE:
-
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            layoutIndex.setBackgroundColor(Color
-                                    .parseColor("#00ffffff"));
-                            float_letter.setVisibility(View.GONE);
-                            break;
-                    }
-                    return true;
-                }
-            });
-        }
-    }
 }

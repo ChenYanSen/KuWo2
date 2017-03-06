@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="62dp"
+        android:layout_marginBottom="55dp"
         android:orientation="vertical">
 
         <include layout="@layout/musicform_toolbar" />
@@ -74,7 +74,8 @@
         <ListView
             android:id="@+id/musicform_listview"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"
+            android:background="@color/theme_color"/>
     </LinearLayout>
 
     <include layout="@layout/main_playbar" />

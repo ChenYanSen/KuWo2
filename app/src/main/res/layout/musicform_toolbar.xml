@@ -11,7 +11,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="25dp"
+        android:layout_height="45dp"
         android:gravity="center">
 
         <ImageView
@@ -26,7 +26,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-
+            android:text="我的歌单"
             android:textSize="@dimen/textsize_18"
             android:textColor="@color/textcolor_white"
             android:paddingTop="5dp"/>

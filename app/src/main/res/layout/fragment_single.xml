@@ -8,5 +8,6 @@
         android:id="@+id/listViewSingle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="57dp" />
+        android:layout_marginBottom="57dp"
+        android:background="@color/musicform_listitem_color1"/>
 </FrameLayout>

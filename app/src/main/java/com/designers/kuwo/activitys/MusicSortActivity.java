@@ -1,28 +1,43 @@
 package com.designers.kuwo.activitys;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.designers.kuwo.R;
+import com.designers.kuwo.utils.CustomApplication;
 import com.designers.kuwo.utils.StatusBarCompat;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MusicSortActivity extends FragmentActivity {
 
@@ -64,7 +79,21 @@ public class MusicSortActivity extends FragmentActivity {
 
     public Context context;
 
-    public static final String TAG = "MusicSortActivity";
+    //playbar中的一些组件
+    private ImageView playimg;
+    private ImageView playlist_menu;//播放列表按钮
+    private TextView playbar_songName;
+    private TextView playbar_singer;
+    private ImageView playbar_play;
+    private ImageView playbar_next;
+
+    private SeekBar seekBar;
+
+    private Dialog playListDialog;
+
+    private PlayListAdapter playListAdapter;
+
+    private CustomApplication customApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +106,9 @@ public class MusicSortActivity extends FragmentActivity {
 
         //初始化TextView
         InitTextView();
+
+        //初始化playBar
+        InitPlayBar();
 
         //初始化ImageView
         InitImageView();
@@ -107,9 +139,13 @@ public class MusicSortActivity extends FragmentActivity {
 
     @Override
     protected void onResume() {
-        //设置为竖屏
-        if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        updatabar.post(updatarun);
+
+        if (CustomApplication.mediaPlayer.isPlaying()){
+            this.playbar_play.setImageResource(R.drawable.stop);
+        }else {
+            this.playbar_play.setImageResource(R.drawable.play);
         }
         super.onResume();
     }
@@ -135,6 +171,39 @@ public class MusicSortActivity extends FragmentActivity {
     }
 
     /**
+     * 初始化playbar
+     */
+    private void InitPlayBar() {
+        playimg = (ImageView) findViewById(R.id.playimg);
+        playbar_songName = (TextView) findViewById(R.id.playbar_songName);
+        playbar_singer = (TextView) findViewById(R.id.playbar_singer);
+        playbar_play = (ImageView) findViewById(R.id.playbar_play);
+        playbar_next = (ImageView) findViewById(R.id.playbar_next);
+        playlist_menu = (ImageView) findViewById(R.id.playlist_menu);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+
+        playlist_menu.setOnClickListener(new CilckEvent());
+    }
+
+    /**
+     * 点击事件
+     */
+
+    private class CilckEvent implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.playlist_menu :
+                    playListDialog();
+                    break;
+                case R.id.playbar_next:
+                    break;
+            }
+        }
+    }
+
+    /**
      * init pagerTab content
      */
     private void InitViewPager() {
@@ -151,6 +220,7 @@ public class MusicSortActivity extends FragmentActivity {
 
         //将顶部文字恢复默认值
         resetTextViewTextColor();
+
         txtSingle.setTextColor(getResources().getColor(R.color.colorPrimary));
 
         //设置viewpager页面滑动监听事件
@@ -301,7 +371,7 @@ public class MusicSortActivity extends FragmentActivity {
                         txtFolder.setTextColor(getResources().getColor(R.color.colorPrimary));
                     } else if (currIndex == 2) {
                         //   page3 -> page4
-                        animation = new TranslateAnimation(position_three, position_three, 0, 0);
+                        animation = new TranslateAnimation(position_two, position_three, 0, 0);
                         resetTextViewTextColor();
                         txtFolder.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
@@ -324,7 +394,6 @@ public class MusicSortActivity extends FragmentActivity {
     /**
      * 设置动画图片宽度
      */
-
     private void setBmpW(ImageView imageView, int mWidth) {
         ViewGroup.LayoutParams para;
         para = imageView.getLayoutParams();
@@ -343,19 +412,124 @@ public class MusicSortActivity extends FragmentActivity {
         txtFolder.setTextColor(getResources().getColor(R.color.music_sort_top_tab_color));
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_music_sort, menu);
-        return true;
+    Handler updatabar = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            updatabar.post(updatarun);
+        }
+    };
+
+    Runnable updatarun = new Runnable() {
+        @Override
+        public void run() {
+
+            customApplication = (CustomApplication) getApplication();
+            int currentPosition = CustomApplication.mediaPlayer.getCurrentPosition();
+            int total = CustomApplication.mediaPlayer.getDuration();
+            seekBar.setMax(total);
+            seekBar.setProgress(currentPosition);
+            updatabar.postDelayed(updatarun, 1000);
+
+            Map<String, Object> playingSong = customApplication.getPlayingSong();
+            if (null != playingSong) {
+                byte[] in = (byte[]) playingSong.get("songImage");
+                Bitmap bm = BitmapFactory.decodeByteArray(in, 0, in.length);
+                playimg.setImageBitmap(bm);
+                playbar_songName.setText(playingSong.get("songName").toString());
+                playbar_singer.setText(playingSong.get("singer").toString());
+                if (CustomApplication.mediaPlayer.isPlaying()){
+                    playbar_play.setImageResource(R.drawable.stop);
+                }else {
+                    playbar_play.setImageResource(R.drawable.play);
+                }
+            }
+        }
+    };
+
+    //播放列表适配器
+    public class PlayListAdapter extends BaseAdapter {
+        private Context context;
+        private List<Map<String, Object>> listItems;
+        private LayoutInflater inflater;
+
+        public PlayListAdapter(Context context, List<Map<String, Object>> listItems) {
+            this.context = context;
+            this.listItems = listItems;
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return listItems.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return listItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder = null;
+            if (null == convertView) {
+                viewHolder = new ViewHolder();
+                convertView = inflater.inflate(R.layout.play_dialog_item, null);
+                viewHolder.play_dialog_songName = (TextView) convertView.findViewById(R.id.play_dialog_songName);
+                viewHolder.play_dialog_singer = (TextView) convertView.findViewById(R.id.play_dialog_singer);
+                viewHolder.play_dialog_delete = (ImageButton) convertView.findViewById(R.id.play_dialog_delete);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            viewHolder.play_dialog_songName.setText(listItems.get(position).get("songName").toString());
+            viewHolder.play_dialog_singer.setText(listItems.get(position).get("singer").toString());
+
+            //按钮绑定点击事件
+
+            return convertView;
+        }
+
+        private class ViewHolder {
+            public TextView play_dialog_songName;
+            public TextView play_dialog_singer;
+            public ImageButton play_dialog_delete;
+        }
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    //点击播放列表按钮弹出的对话框
+    public void playListDialog() {
+        playListDialog = new Dialog(this, R.style.BottomAddDialog);
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.play_dialog, null);
+        ListView play_dialog_playlist = (ListView) root.findViewById(R.id.play_dialog_playlist);
+        //customApplication.setPlayList(listItems);
+        //MusicUtil.setObjectToShare(this, listItems, "playList");
+        playListAdapter = new PlayListAdapter(this, customApplication.getPlayList());
+        play_dialog_playlist.setAdapter(playListAdapter);
+        play_dialog_playlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                playListDialog.dismiss();
+            }
+        });
+        playListDialog.setContentView(root);
+        Window dialogWindow = playListDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x = 0; // 新位置X坐标
+        lp.y = 0; // 新位置Y坐标
+        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0, 0);
+        lp.height = 750;
+        dialogWindow.setAttributes(lp);
+        playListDialog.show();
     }
+
 
 }

@@ -7,12 +7,14 @@ import android.util.Log;
 import com.designers.kuwo.biz.AlbumBiz;
 import com.designers.kuwo.dao.AlbumDao;
 import com.designers.kuwo.dao.daoimpl.AlbumDaoImpl;
-import com.designers.kuwo.entity.Album;
+import com.designers.kuwo.eneity.Album;
+import com.designers.kuwo.eneity.Song;
 import com.designers.kuwo.sqlite.SQLiteDatabaseManager;
 import com.designers.kuwo.sqlite.TransactionManager;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by PC-CWB on 2017/2/22.
@@ -74,5 +76,26 @@ public class AlbumBizImpl implements AlbumBiz {
             sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
             Log.i("数据库操作：","数据库关闭");
         }
+    }
+
+    @Override
+    public List<Song> songAllFindByAlbum(Context context, String album) {
+        SQLiteDatabase sqLiteDatabase=sqLiteDatabaseManager.getDatabaseByRead(context);
+        Log.i("数据库操作：", "获得数据库连接。。。。。");
+        try {
+            Log.i("数据库操作：","查询song by album 。。。。。");
+            return albumDao.selectSongAllByAlbum(sqLiteDatabase,album);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }finally {
+            sqLiteDatabaseManager.closeSQLiteDatabase(sqLiteDatabase);
+            Log.i("数据库操作：","数据库关闭");
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> songFindAllByAlbums(Context context, String album) {
+        return null;
     }
 }

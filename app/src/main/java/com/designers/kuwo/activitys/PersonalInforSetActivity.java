@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.designers.kuwo.R;
 import com.designers.kuwo.biz.UserBiz;
 import com.designers.kuwo.biz.bizimpl.UserBizImpl;
-import com.designers.kuwo.entity.User;
+import com.designers.kuwo.eneity.User;
 import com.designers.kuwo.utils.CircularImage;
 import com.designers.kuwo.utils.StatusBarCompat;
 

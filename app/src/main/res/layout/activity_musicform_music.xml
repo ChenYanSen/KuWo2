@@ -8,8 +8,9 @@
         android:id="@+id/musicform_music_yllistview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginBottom="62dp"
-        android:divider="@android:color/transparent" />
+        android:layout_marginBottom="55dp"
+        android:divider="@android:color/transparent"
+        android:background="@color/theme_color"/>
 
     <include layout="@layout/music_toolbar" />
 

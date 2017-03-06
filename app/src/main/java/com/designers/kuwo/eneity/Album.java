@@ -1,4 +1,6 @@
-package com.designers.kuwo.entity;
+package com.designers.kuwo.eneity;
+
+import java.util.Arrays;
 
 /**
  * Created by PC-CWB on 2017/2/21.
@@ -7,7 +9,7 @@ public class Album {
 
     private String albumName = null;
     private String songName = null;
-    private String albumUri = null;
+    private byte [] albumUri = null;
     private String singer = null;
     private int songNum = 0;
 
@@ -21,7 +23,7 @@ public class Album {
         this.songName = songName;
     }
 
-    public Album(String albumName, String songName, String albumUri) {
+    public Album(String albumName, String songName, byte [] albumUri) {
         this.albumName = albumName;
         this.songName = songName;
         this.albumUri = albumUri;
@@ -35,9 +37,6 @@ public class Album {
         this.songName = songName;
     }
 
-    public void setAlbumUri(String albumUri) {
-        this.albumUri = albumUri;
-    }
 
     public String getAlbumName() {
         return albumName;
@@ -47,9 +46,6 @@ public class Album {
         return songName;
     }
 
-    public String getAlbumUri() {
-        return albumUri;
-    }
 
     public void setSinger(String singer) {
         this.singer = singer;
@@ -67,11 +63,22 @@ public class Album {
         return songNum;
     }
 
+    public void setAlbumUri(byte [] albumUri) {
+        this.albumUri = albumUri;
+    }
+
+    public byte [] getAlbumUri() {
+        return albumUri;
+    }
+
     @Override
     public String toString() {
         return "Album{" +
                 "albumName='" + albumName + '\'' +
                 ", songName='" + songName + '\'' +
+                ", albumUri=" + Arrays.toString(albumUri) +
+                ", singer='" + singer + '\'' +
+                ", songNum=" + songNum +
                 '}';
     }
 }

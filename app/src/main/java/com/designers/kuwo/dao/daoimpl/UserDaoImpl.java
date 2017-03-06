@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.designers.kuwo.dao.UserDao;
-import com.designers.kuwo.entity.User;
+import com.designers.kuwo.eneity.User;
 import com.designers.kuwo.sqlite.SQLManager;
 import com.designers.kuwo.sqlite.TransactionManager;
 

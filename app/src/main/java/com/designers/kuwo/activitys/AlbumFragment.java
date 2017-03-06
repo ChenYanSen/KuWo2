@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.designers.kuwo.R;
 import com.designers.kuwo.biz.AlbumBiz;
 import com.designers.kuwo.biz.bizimpl.AlbumBizImpl;
-import com.designers.kuwo.entity.Album;
+import com.designers.kuwo.eneity.Album;
 import com.designers.kuwo.utils.CircularImage;
 
 import java.util.ArrayList;

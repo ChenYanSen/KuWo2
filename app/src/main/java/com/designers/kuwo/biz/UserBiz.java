@@ -2,7 +2,7 @@ package com.designers.kuwo.biz;
 
 import android.content.Context;
 
-import com.designers.kuwo.entity.User;
+import com.designers.kuwo.eneity.User;
 
 /**
  * Created by 跃 on 2017/1/12.

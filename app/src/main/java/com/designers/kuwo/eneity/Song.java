@@ -1,6 +1,7 @@
-package com.designers.kuwo.entity;
+package com.designers.kuwo.eneity;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Created by Administrator on 2017/1/12.
@@ -10,18 +11,18 @@ public class Song implements Serializable {
     private String songName = null;
     private String singer = null;
     private String songUri = null;
-    private String songImage = null;
+    private byte[] songImage = null;
     private String singLyrics = null;
     private String information = null;
     private String time = null;
-    private String singerUri = null;
-    private String albumUri = null;
+    private String rank=null;
+    private byte[] singerUri = null;
     private String folder = null;
 
     public Song() {
     }
 
-    public Song(String songName, String singer, String songUri, String songImage, String singLyrics, String information, String time) {
+    public Song(String songName, String singer, String songUri, byte [] songImage, String singLyrics, String information, String time) {
         this.songName = songName;
         this.singer = singer;
         this.songUri = songUri;
@@ -31,8 +32,8 @@ public class Song implements Serializable {
         this.time = time;
     }
 
-    public Song(String songName, String singer, String songUri, String songImage, String singLyrics, String information, String time,
-                String singerUri, String albumUri) {
+    public Song(String songName, String singer, String songUri, byte [] songImage, String singLyrics, String information, String time,
+                byte [] singerUri) {
         this.songName = songName;
         this.singer = singer;
         this.songUri = songUri;
@@ -41,11 +42,11 @@ public class Song implements Serializable {
         this.information = information;
         this.time = time;
         this.singerUri = singerUri;
-        this.albumUri = albumUri;
+
     }
 
-    public Song(String songName, String singer, String songUri, String songImage, String singLyrics, String information, String time,
-                String singerUri, String albumUri, String folder) {
+    public Song(String songName, String singer, String songUri, byte [] songImage, String singLyrics, String information, String time,
+                byte [] singerUri , String folder) {
         this.songName = songName;
         this.singer = singer;
         this.songUri = songUri;
@@ -54,7 +55,6 @@ public class Song implements Serializable {
         this.information = information;
         this.time = time;
         this.singerUri = singerUri;
-        this.albumUri = albumUri;
         this.folder = folder;
     }
 
@@ -82,12 +82,20 @@ public class Song implements Serializable {
         this.songUri = songUri;
     }
 
-    public String getSongImage() {
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
+
+    public void setSongImage(byte[] songImage) {
+        this.songImage = songImage;
+    }
+
+    public byte[] getSongImage() {
         return songImage;
     }
 
-    public void setSongImage(String songImage) {
-        this.songImage = songImage;
+    public String getRank() {
+        return rank;
     }
 
     public String getSingLyrics() {
@@ -114,21 +122,15 @@ public class Song implements Serializable {
         this.time = time;
     }
 
-    public void setSingerUri(String singerUri) {
+    public void setSingerUri(byte [] singerUri) {
         this.singerUri = singerUri;
     }
 
-    public void setAlbumUri(String albumUri) {
-        this.albumUri = albumUri;
-    }
 
-    public String getSingerUri() {
+    public byte [] getSingerUri() {
         return singerUri;
     }
 
-    public String getAlbumUri() {
-        return albumUri;
-    }
 
     public void setFolder(String folder) {
         this.folder = folder;
@@ -144,12 +146,12 @@ public class Song implements Serializable {
                 "songName='" + songName + '\'' +
                 ", singer='" + singer + '\'' +
                 ", songUri='" + songUri + '\'' +
-                ", songImage='" + songImage + '\'' +
+                ", songImage=" + Arrays.toString(songImage) +
                 ", singLyrics='" + singLyrics + '\'' +
                 ", information='" + information + '\'' +
                 ", time='" + time + '\'' +
-                ", singerUri='" + singerUri + '\'' +
-                ", albumUri='" + albumUri + '\'' +
+                ", rank='" + rank + '\'' +
+                ", singerUri=" + Arrays.toString(singerUri) +
                 ", folder='" + folder + '\'' +
                 '}';
     }

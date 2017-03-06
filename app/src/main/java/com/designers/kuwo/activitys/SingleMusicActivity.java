@@ -1,10 +1,16 @@
 package com.designers.kuwo.activitys;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +24,29 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.designers.kuwo.R;
-import com.designers.kuwo.utils.CircularImage;
+import com.designers.kuwo.biz.RecentBiz;
+import com.designers.kuwo.biz.SongBiz;
+import com.designers.kuwo.biz.SongListBiz;
+import com.designers.kuwo.biz.bizimpl.RecentBizImpl;
+import com.designers.kuwo.biz.bizimpl.SongBizImpl;
+import com.designers.kuwo.biz.bizimpl.SongListBizImpl;
+import com.designers.kuwo.eneity.Recent;
+import com.designers.kuwo.eneity.SongList;
+import com.designers.kuwo.utils.CustomApplication;
+import com.designers.kuwo.utils.MusicFromListViewAdapter;
+import com.designers.kuwo.utils.MusicPlayer;
 import com.designers.kuwo.utils.StatusBarCompat;
 import com.designers.kuwo.utils.SwipeBackLayout;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,42 +56,74 @@ import java.util.Map;
 public class SingleMusicActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private List<Map<String, Object>> listItems;
+    private List<Map<String, Object>> formListItems;
     private ListView music_listview;
     private ImageView back;
     private TextView toolbar_txt;
-    private CircularImage playbar_img_imgview;
+    private ImageView playimg;
+    private ImageView playlist_menu;//播放列表按钮
+    private TextView playbar_songName;
+    private TextView playbar_singer;
+    private ImageView playbar_play;
+    private ImageView playbar_next;
     private LinearLayout music_dialog_add;//对话框添加按钮
     private LinearLayout music_dialog_selectall;//对话框全选按钮
     private LinearLayout music_dialog_delete;//对话框删除按钮
     private LinearLayout music_dialog_cancle;//对话框取消按钮
+    private TextView select_txt;
     private SwipeBackLayout swipeLayout;
     private LinearLayout music_search;//搜索按钮
     private ImageView selectMany;//多选按钮
     private MusicListViewAdapter adapter;
     private MusicSelectListViewAdapter selectAdapter;
+    private MusicFromListViewAdapter musicFromListViewAdapter;
+    private PlayListAdapter playListAdapter;
     private Dialog dialog;//长按item底部弹出的对话框
+    private Dialog addDialog;
+    private Dialog infoDialog;
+    private Dialog playListDialog;
+    private SeekBar seekBar;
     private int oldPosition = -1;//用来记录上一次所点按钮的位置
     private int totalHight = 0;
     private boolean flag = false;//是否处于多选
+    private boolean once;//是否第一次点击item
 
+    private CustomApplication customApplication;
+    private String userName;
     private List<Integer> selectList = new ArrayList<>();
+    private Map<String, Object> song;
+    private SongBiz songBiz = new SongBizImpl();
+    private SongListBiz songListBiz = new SongListBizImpl();
+    private RecentBiz recentBiz = new RecentBizImpl();
+    private MusicPlayer musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_like);
 
-        listItems = init();
+        customApplication = (CustomApplication) getApplication();
+        userName = customApplication.getUserName();
+        listItems = initSong();
         back = (ImageView) findViewById(R.id.back);
         toolbar_txt = (TextView) findViewById(R.id.toolbar_txt);
         swipeLayout = (SwipeBackLayout) findViewById(R.id.swipeLayout);
         music_listview = (ListView) findViewById(R.id.music_listview);
-        playbar_img_imgview = (CircularImage) findViewById(R.id.playbar_img_imgview);
+        playimg = (ImageView) findViewById(R.id.playimg);
         music_search = (LinearLayout) findViewById(R.id.music_search);
         selectMany = (ImageView) findViewById(R.id.selectMany);
+        playlist_menu = (ImageView) findViewById(R.id.playlist_menu);
+        playbar_songName = (TextView) findViewById(R.id.playbar_songName);
+        playbar_singer = (TextView) findViewById(R.id.playbar_singer);
+        playbar_play = (ImageView) findViewById(R.id.playbar_play);
+        playbar_next = (ImageView) findViewById(R.id.playbar_next);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         toolbar_txt.setText("单曲");
-        playbar_img_imgview.setImageResource(R.drawable.playbarimg);
+        if (CustomApplication.mediaPlayer.isPlaying()) {
+            playbar_play.setImageResource(R.drawable.stop);
+        }
+
         swipeLayout.setCallBack(new SwipeBackLayout.CallBack() {
             @Override
             public void onFinish() {
@@ -85,23 +136,24 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
 
         back.setOnClickListener(this);
         selectMany.setOnClickListener(this);
+        playlist_menu.setOnClickListener(this);
+        playbar_play.setOnClickListener(this);
+        playbar_next.setOnClickListener(this);
         music_listview.setOnItemClickListener(this);
         music_listview.setOnItemLongClickListener(this);
 
         //全屏
         StatusBarCompat.compat(this);
+        updatabar.post(updatarun);
     }
 
-    public List<Map<String, Object>> init() {
-        List<Map<String, Object>> items = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Map<String, Object> map = new HashMap();
-            map.put("musicname", "告白气球");
-            map.put("songer", "周杰伦");
-            map.put("expend", false);
-            map.put("checked", false);
-            items.add(map);
-        }
+    public List<Map<String, Object>> initSong() {
+        List<Map<String, Object>> items = songBiz.findAll(this);
+        return items;
+    }
+
+    public List<Map<String, Object>> initSongForm() {
+        List<Map<String, Object>> items = songListBiz.findNameAndSize(this, userName);
         return items;
     }
 
@@ -109,7 +161,40 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (!flag) {
-            Toast.makeText(this, position + "", Toast.LENGTH_SHORT).show();
+            String songName = listItems.get(position).get("songName").toString();
+            String singer = listItems.get(position).get("singer").toString();
+            int i = songBiz.selectRank(this, songName, singer);
+            songBiz.updateRank(this, songName, singer, i + 1);
+            if (recentBiz.songExist(this, songName)) {
+                recentBiz.update(this, new Recent(songName, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())));
+            } else {
+                recentBiz.insert(this, new Recent(songName, new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())));
+            }
+            //加入播放列表
+            if (!once) {
+                customApplication.setPlayList(listItems);
+                once = true;
+            }
+
+            //设置播放栏的内容并播放
+            Map<String, Object> song = listItems.get(position);
+            byte[] in = (byte[]) song.get("songImage");
+            Bitmap bm = BitmapFactory.decodeByteArray(in, 0, in.length);
+            playimg.setImageBitmap(bm);
+            playbar_songName.setText(song.get("songName").toString());
+            playbar_singer.setText(song.get("singer").toString());
+            customApplication.setPlayingSong(song);
+
+            musicPlayer = new MusicPlayer(this, customApplication, playimg, playbar_play,
+                    playbar_songName, playbar_singer);
+            try {
+                CustomApplication.mediaPlayer.reset();
+                CustomApplication.mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(song.get("songUri").toString()));
+                CustomApplication.mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            musicPlayer.play();
         }
     }
 
@@ -132,6 +217,10 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
                 finish();
                 break;
 
+            case R.id.playlist_menu:
+                playListDialog();
+                break;
+
             case R.id.selectMany:
                 if (!flag) {
                     music_listview.setAdapter(selectAdapter);
@@ -145,18 +234,31 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
                 break;
 
             case R.id.music_dilog_add:
-                Toast.makeText(this, "添加", Toast.LENGTH_SHORT).show();
-                music_listview.setAdapter(adapter);
-                dialog.dismiss();
+                // Toast.makeText(this, "添加", Toast.LENGTH_SHORT).show();
+                if (selectList.size() != 0) {
+                    dialog.dismiss();
+                    music_listview.setAdapter(adapter);
+                    listItems = initSong();
+                    addDialog();
+                }
                 flag = false;
                 break;
 
             case R.id.music_dilog_selectall:
-                Toast.makeText(this, "全选", Toast.LENGTH_SHORT).show();
-                for (int i = 0; i < listItems.size(); i++) {
-                    listItems.get(i).put("checked", true);
-                    if (!selectList.contains(i))
-                        selectList.add(i);
+                if ("全选".equals(select_txt.getText().toString())) {
+                    //Toast.makeText(this, "全选", Toast.LENGTH_SHORT).show();
+                    for (int i = 0; i < listItems.size(); i++) {
+                        listItems.get(i).put("checked", true);
+                        if (!selectList.contains(i))
+                            selectList.add(i);
+                    }
+                    select_txt.setText("取消全选");
+                } else {
+                    for (int i = 0; i < listItems.size(); i++) {
+                        listItems.get(i).put("checked", false);
+                    }
+                    selectList.clear();
+                    select_txt.setText("全选");
                 }
                 selectAdapter.notifyDataSetChanged();
                 flag = false;
@@ -164,8 +266,9 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
 
             case R.id.music_dilog_delete:
                 Toast.makeText(this, "删除" + selectList.toString(), Toast.LENGTH_SHORT).show();
+                deleteDialog();
                 music_listview.setAdapter(adapter);
-                listItems = init();
+                listItems = initSong();
                 selectList.clear();
                 dialog.dismiss();
                 flag = false;
@@ -174,10 +277,22 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
             case R.id.music_dilog_cancle:
                 Toast.makeText(this, "取消", Toast.LENGTH_SHORT).show();
                 music_listview.setAdapter(adapter);
-                listItems = init();
+                listItems = initSong();
                 selectList.clear();
                 dialog.dismiss();
                 flag = false;
+                break;
+
+            case R.id.playbar_play:
+                musicPlayer = new MusicPlayer(this, customApplication, playimg, playbar_play,
+                        playbar_songName, playbar_singer);
+                musicPlayer.play();
+                break;
+
+            case R.id.playbar_next:
+                musicPlayer = new MusicPlayer(this, customApplication, playimg, playbar_play,
+                        playbar_songName, playbar_singer);
+                musicPlayer.next();
                 break;
         }
     }
@@ -232,13 +347,13 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
             } else {
                 viewHolder.expend.setVisibility(View.GONE);
             }
-            viewHolder.itemMusic_name_txt.setText(map.get("musicname").toString());
-            viewHolder.itemMusic_songer_txt.setText(map.get("songer").toString());
+            viewHolder.itemMusic_name_txt.setText(map.get("songName").toString());
+            viewHolder.itemMusic_songer_txt.setText(map.get("singer").toString());
             //按钮绑定点击事件
             viewHolder.itemMusic_btn.setOnClickListener(new ViewOCL(position));
-            viewHolder.music_expend_add.setOnClickListener(new ViewOCL());
-            viewHolder.music_expend_info.setOnClickListener(new ViewOCL());
-            viewHolder.music_expend_delete.setOnClickListener(new ViewOCL());
+            viewHolder.music_expend_add.setOnClickListener(new ViewOCL(position));
+            viewHolder.music_expend_info.setOnClickListener(new ViewOCL(position));
+            viewHolder.music_expend_delete.setOnClickListener(new ViewOCL(position));
             return convertView;
         }
 
@@ -259,6 +374,9 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.itemMusic_btn:
+
+                        song = listItems.get(position);
+
                         map = listItems.get(position);
                         expend = (boolean) map.get("expend");
                         if (oldPosition == position) {
@@ -285,15 +403,24 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
                         break;
 
                     case R.id.music_expend_add:
-                        Toast.makeText(SingleMusicActivity.this, "添加", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SingleMusicActivity.this, "添加", Toast.LENGTH_SHORT).show();
+                        addDialog();
+                        listItems.get(position).put("expend", false);
+                        adapter.notifyDataSetChanged();
                         break;
 
                     case R.id.music_expend_info:
-                        Toast.makeText(SingleMusicActivity.this, "信息", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SingleMusicActivity.this, "信息", Toast.LENGTH_SHORT).show();
+                        infoDialog();
+                        listItems.get(position).put("expend", false);
+                        adapter.notifyDataSetChanged();
                         break;
 
                     case R.id.music_expend_delete:
-                        Toast.makeText(SingleMusicActivity.this, "删除", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SingleMusicActivity.this, "删除", Toast.LENGTH_SHORT).show();
+                        deleteDialog();
+                        listItems.get(position).put("expend", false);
+                        adapter.notifyDataSetChanged();
                         break;
                 }
             }
@@ -340,7 +467,7 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
             Map map = listItems.get(position);
             ViewHolder viewHolder = null;
             if (null == convertView) {
-                Log.i("test", position + "为空");
+                //Log.i("test", position + "为空");
                 viewHolder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.musicform_music_item__select_layout, null);
                 viewHolder.itemMusic_name_txt = (TextView) convertView.findViewById(R.id.itemMusic_name_txt);
@@ -348,7 +475,7 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
                 viewHolder.check = (CheckBox) convertView.findViewById(R.id.checkbox);
                 convertView.setTag(viewHolder);
             } else {
-                Log.i("test", position + "不为空");
+                //Log.i("test", position + "不为空");
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
@@ -365,8 +492,8 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
                 }
             });
             viewHolder.check.setChecked((boolean) map.get("checked"));
-            viewHolder.itemMusic_name_txt.setText(map.get("musicname").toString());
-            viewHolder.itemMusic_songer_txt.setText(map.get("songer").toString());
+            viewHolder.itemMusic_name_txt.setText(map.get("songName").toString());
+            viewHolder.itemMusic_songer_txt.setText(map.get("singer").toString());
             return convertView;
         }
 
@@ -377,6 +504,91 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
         }
     }
 
+    //播放列表适配器
+    public class PlayListAdapter extends BaseAdapter {
+        private Context context;
+        private List<Map<String, Object>> listItems;
+        private LayoutInflater inflater;
+
+        public PlayListAdapter(Context context, List<Map<String, Object>> listItems) {
+            this.context = context;
+            this.listItems = listItems;
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return listItems.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return listItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder = null;
+            if (null == convertView) {
+                viewHolder = new ViewHolder();
+                convertView = inflater.inflate(R.layout.play_dialog_item, null);
+                viewHolder.play_dialog_songName = (TextView) convertView.findViewById(R.id.play_dialog_songName);
+                viewHolder.play_dialog_singer = (TextView) convertView.findViewById(R.id.play_dialog_singer);
+                viewHolder.play_dialog_delete = (ImageButton) convertView.findViewById(R.id.play_dialog_delete);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            viewHolder.play_dialog_songName.setText(listItems.get(position).get("songName").toString());
+            viewHolder.play_dialog_singer.setText(listItems.get(position).get("singer").toString());
+
+            //按钮绑定点击事件
+
+            return convertView;
+        }
+
+        private class ViewHolder {
+            public TextView play_dialog_songName;
+            public TextView play_dialog_singer;
+            public ImageButton play_dialog_delete;
+        }
+
+    }
+
+    //点击播放列表按钮弹出的对话框
+    public void playListDialog() {
+        playListDialog = new Dialog(this, R.style.BottomAddDialog);
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.play_dialog, null);
+        ListView play_dialog_playlist = (ListView) root.findViewById(R.id.play_dialog_playlist);
+        //customApplication.setPlayList(listItems);
+        //MusicUtil.setObjectToShare(this, listItems, "playList");
+        playListAdapter = new PlayListAdapter(SingleMusicActivity.this, customApplication.getPlayList());
+        play_dialog_playlist.setAdapter(playListAdapter);
+        play_dialog_playlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                playListDialog.dismiss();
+            }
+        });
+        playListDialog.setContentView(root);
+        Window dialogWindow = playListDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x = 0; // 新位置X坐标
+        lp.y = 0; // 新位置Y坐标
+        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0, 0);
+        lp.height = 750;
+        dialogWindow.setAttributes(lp);
+        playListDialog.show();
+    }
+
     //点击多选按钮之后弹出的对话框
     public void setDialog() {
         dialog = new Dialog(this, R.style.BottomDialog);
@@ -385,6 +597,7 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
         music_dialog_selectall = (LinearLayout) root.findViewById(R.id.music_dilog_selectall);
         music_dialog_delete = (LinearLayout) root.findViewById(R.id.music_dilog_delete);
         music_dialog_cancle = (LinearLayout) root.findViewById(R.id.music_dilog_cancle);
+        select_txt = (TextView) root.findViewById(R.id.select_txt);
         music_dialog_add.setOnClickListener(this);
         music_dialog_selectall.setOnClickListener(this);
         music_dialog_delete.setOnClickListener(this);
@@ -404,4 +617,132 @@ public class SingleMusicActivity extends Activity implements View.OnClickListene
         dialogWindow.setAttributes(lp);
         dialog.show();
     }
+
+    //点击添加按钮弹出的对话框
+    public void addDialog() {
+        addDialog = new Dialog(this, R.style.BottomAddDialog);
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.add_dialog, null);
+        ListView add_dialog_musicform = (ListView) root.findViewById(R.id.add_dialog_musicform);
+        formListItems = initSongForm();
+        musicFromListViewAdapter = new MusicFromListViewAdapter(SingleMusicActivity.this, formListItems);
+        add_dialog_musicform.setAdapter(musicFromListViewAdapter);
+        add_dialog_musicform.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Map<String, Object> songList = formListItems.get(position);
+                String songListName = songList.get("name").toString();
+                if (selectList.size() == 0) {
+                    String songName = song.get("songName").toString();
+                    //Log.i("test", songListName + songName);
+                    songListBiz.insert(SingleMusicActivity.this, new SongList(songListName, songName, userName));
+                } else {
+                    for (int index : selectList) {
+                        String songName = listItems.get(index).get("songName").toString();
+                        songListBiz.insert(SingleMusicActivity.this, new SongList(songListName, songName, userName));
+                    }
+                }
+                addDialog.dismiss();
+            }
+        });
+        addDialog.setContentView(root);
+        Window dialogWindow = addDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x = 0; // 新位置X坐标
+        lp.y = 0; // 新位置Y坐标
+        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0, 0);
+        lp.height = 600;
+        dialogWindow.setAttributes(lp);
+        addDialog.show();
+    }
+
+    //点击信息弹出的对话框
+    public void infoDialog() {
+        infoDialog = new Dialog(this, R.style.BottomAddDialog);
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.info_dialog, null);
+        TextView songName = (TextView) root.findViewById(R.id.songName);
+        TextView singer = (TextView) root.findViewById(R.id.singer);
+        TextView songUri = (TextView) root.findViewById(R.id.songUri);
+        TextView time = (TextView) root.findViewById(R.id.time);
+        songName.setText(song.get("songName").toString());
+        singer.setText(song.get("singer").toString());
+        songUri.setText(song.get("songUri").toString());
+        time.setText(new SimpleDateFormat("mm:ss").format(new Date(Integer.parseInt(song.get("time").toString()))));
+        infoDialog.setContentView(root);
+        Window dialogWindow = infoDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.x = 0; // 新位置X坐标
+        lp.y = 0; // 新位置Y坐标
+        lp.width = (int) getResources().getDisplayMetrics().widthPixels; // 宽度
+        root.measure(0, 0);
+        lp.height = 550;
+        dialogWindow.setAttributes(lp);
+        infoDialog.show();
+    }
+
+    //点击删除弹出的对话框
+    public void deleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(SingleMusicActivity.this).inflate(R.layout.delete_dialog, null);
+        builder.setView(view);
+        builder.setPositiveButton("确定", new Dialog.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new Dialog.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog ad = builder.create();
+        builder.show();
+    }
+
+    @Override
+    protected void onResume() {
+        Map<String, Object> playingSong = customApplication.getPlayingSong();
+        if (playingSong != null) {
+            byte[] in = (byte[]) playingSong.get("songImage");
+            Bitmap bm = BitmapFactory.decodeByteArray(in, 0, in.length);
+            playimg.setImageBitmap(bm);
+            playbar_songName.setText(playingSong.get("songName").toString());
+            playbar_singer.setText(playingSong.get("singer").toString());
+        }
+        musicPlayer = new MusicPlayer(this, customApplication, playimg, playbar_play,
+                playbar_songName, playbar_singer);
+        super.onResume();
+    }
+
+    //seekBar同步音乐播放线程
+    Handler updatabar = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            updatabar.post(updatarun);
+        }
+    };
+    Runnable updatarun = new Runnable() {
+        @Override
+        public void run() {
+
+            int currentPosition = CustomApplication.mediaPlayer.getCurrentPosition();
+            int total = CustomApplication.mediaPlayer.getDuration();
+            seekBar.setMax(total);
+            seekBar.setProgress(currentPosition);
+            updatabar.postDelayed(updatarun, 1000);
+           /* //通过seekBar的当前进度与最大值比较，当相等时说明歌曲播放完，这时候停止动画 设置播放按钮的图标
+            if (currentPosition == 100) {
+                while (CustomApplication.mediaPlayer.isPlaying()) {
+                    //改变playFlag=0,让其处于待播放状态
+                    playFlag = 0;
+                    //设置播放按钮图标
+                    playMusic.setImageResource(R.drawable.ic_media_play_3);
+                }
+            }*/
+        }
+    };
 }

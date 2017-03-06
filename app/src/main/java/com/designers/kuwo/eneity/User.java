@@ -1,4 +1,4 @@
-package com.designers.kuwo.entity;
+package com.designers.kuwo.eneity;
 
 /**
  * Created by 跃 on 2017/1/12.

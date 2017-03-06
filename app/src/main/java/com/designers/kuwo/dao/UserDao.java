@@ -2,7 +2,7 @@ package com.designers.kuwo.dao;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.designers.kuwo.entity.User;
+import com.designers.kuwo.eneity.User;
 
 import java.sql.SQLException;
 

@@ -1,15 +1,17 @@
-package com.designers.kuwo.entity;
+package com.designers.kuwo.eneity;
+
+import com.designers.kuwo.activitys.PinYinUtils;
 
 /**
  * Created by PC-CWB on 2017/2/21.
  */
 public class Singer {
 
-    private String singer = null;
-    private String singerUri = null;
-    private String songName = null;
-    private String songUri = null;
-    private String songImage = null;
+    private String singer = null;           //歌手名
+    private byte [] singerUri = null;       //歌手图片
+    private String songName = null;         //歌曲名
+    private String songUri = null;          //歌曲路径
+    private byte [] songImage = null;
     private int songNum = 0;
     private String pinyinName = null;    //用于索引
 
@@ -22,21 +24,14 @@ public class Singer {
         this.singer = singer;
     }
 
-    public Singer(String singer, String pinyinName) {
-        super();
-        this.singer = singer;
-        this.pinyinName = pinyinName;
-    }
-
-    public Singer(String singer, int songNum, String singerUri) {
+    public Singer(String singer, int songNum, byte [] singerUri) {
         super();
         this.singer = singer;
         this.songNum = songNum;
         this.singerUri = singerUri;
-
     }
 
-    public Singer(String singer, String pinyinName, int songNum, String singerUri) {
+    public Singer(String singer, String pinyinName, int songNum, byte [] singerUri) {
         super();
         this.singer = singer;
         this.pinyinName = pinyinName;
@@ -49,7 +44,7 @@ public class Singer {
         return singer;
     }
 
-    public String getSingerUri() {
+    public byte [] getSingerUri() {
         return singerUri;
     }
 
@@ -61,7 +56,7 @@ public class Singer {
         return songUri;
     }
 
-    public String getSongImage() {
+    public byte [] getSongImage() {
         return songImage;
     }
 
@@ -69,7 +64,7 @@ public class Singer {
         this.singer = singer;
     }
 
-    public void setSingerUri(String singerUri) {
+    public void setSingerUri(byte [] singerUri) {
         this.singerUri = singerUri;
     }
 
@@ -81,7 +76,7 @@ public class Singer {
         this.songUri = songUri;
     }
 
-    public void setSongImage(String songImage) {
+    public void setSongImage(byte [] songImage) {
         this.songImage = songImage;
     }
 
@@ -99,8 +94,9 @@ public class Singer {
     }
 
     public String getPinyinName() {
-        return pinyinName;
+        return PinYinUtils.getPinYin(singer);
     }
+
 
 
 }

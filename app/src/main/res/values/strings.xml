@@ -40,5 +40,5 @@
     <string name="txt_hide_03">分享</string>
     <string name="txt_hide_04">歌曲信息</string>
     <string name="txt_hide_05">收藏</string>
-
+    <string name="delete_dialog_text">确定删除吗？</string>
 </resources>

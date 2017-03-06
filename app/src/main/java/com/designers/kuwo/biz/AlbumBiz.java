@@ -2,9 +2,11 @@ package com.designers.kuwo.biz;
 
 import android.content.Context;
 
-import com.designers.kuwo.entity.Album;
+import com.designers.kuwo.eneity.Album;
+import com.designers.kuwo.eneity.Song;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by PC-CWB on 2017/2/22.
@@ -24,4 +26,9 @@ public interface AlbumBiz {
     public abstract List<Album> AlbumFind(final Context context);
 
     public abstract List<Album> songFindByAlbum(final Context context,String albums);
+
+    public abstract List<Song> songAllFindByAlbum(final Context context,String album);
+
+    public abstract List<Map<String,Object>> songFindAllByAlbums(final Context context,String album);
+
 }

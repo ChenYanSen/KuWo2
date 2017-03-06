@@ -2,7 +2,7 @@ package com.designers.kuwo.biz;
 
 import android.content.Context;
 
-import com.designers.kuwo.entity.Song;
+import com.designers.kuwo.eneity.Song;
 
 import java.util.List;
 import java.util.Map;
@@ -22,4 +22,17 @@ public interface SongBiz {
 
     //扫描出文件夹的歌曲数目
     public abstract List<Map<String,Integer>> findSongNum(final Context context);
+
+    //根据文件扫描出歌曲
+    public abstract List<Song> findSongByFolder(final Context context,final String folder);
+
+    public abstract List<Map<String, Object>> findByName(final Context context, final String songListName, final String userName);
+
+    public abstract void updateRank(final Context context, final String songName, final String singer, final int rank);
+
+    public abstract int selectRank(final Context context, final String songName, final String singer);
+
+    public abstract List<Map<String, Object>> selectByRank(final Context context);
+
+    public abstract void  removeSong(final Context context,final String songName,final String singer);
 }

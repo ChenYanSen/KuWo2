@@ -1,16 +1,19 @@
 package com.designers.kuwo.dao.daoimpl;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.designers.kuwo.dao.AlbumDao;
-import com.designers.kuwo.entity.Album;
+import com.designers.kuwo.eneity.Album;
+import com.designers.kuwo.eneity.Song;
 import com.designers.kuwo.sqlite.SQLManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by PC-CWB on 2017/2/22.
@@ -25,7 +28,6 @@ public class AlbumDaoImpl implements AlbumDao {
 
     /**
      * 插入专辑信息
-     *
      * @param sqLiteDatabase
      * @param album
      * @throws SQLException
@@ -34,13 +36,15 @@ public class AlbumDaoImpl implements AlbumDao {
     public void insert(SQLiteDatabase sqLiteDatabase, Album album) throws SQLException {
         String albumName = album.getAlbumName();
         String songName = album.getSongName();
-        String albumUri = album.getAlbumUri();
+        byte[] albumUri = album.getAlbumUri();
         String singer = album.getSinger();
-        String sql = "insert into album(albumName,songName,singer,albumUri) values(?,?,?,?)";
-        Log.i("数据库操作：", sql);
-        String[] bindArgs = new String[]{albumName, songName, albumUri, singer};
-        this.sqlManager.execWrite(sqLiteDatabase, sql, bindArgs);
-        Log.i("数据库操作：", "数据写入已经执行");
+
+        ContentValues values = new ContentValues();
+        values.put("albumName", albumName);
+        values.put("songName", songName);
+        values.put("albumUri", albumUri);
+        values.put("singer", singer);
+        sqLiteDatabase.insert("album", null, values);
     }
 
     /**
@@ -53,14 +57,14 @@ public class AlbumDaoImpl implements AlbumDao {
     @Override
     public List<Album> selectAlbum(SQLiteDatabase sqLiteDatabase) {
         List<Album> albumList = new ArrayList<Album>();
-        String sql = "select distinct albumName,albumUri,count(1) from album group by albumName";
+        String sql = "select distinct albumName,albumUri,count(distinct songName) from album group by albumName";
         String[] selectionArgs = new String[]{};
         Cursor cursor = sqlManager.execRead(sqLiteDatabase, sql, selectionArgs);
         Log.i("数据库执行sql:", sql);
         while (cursor.moveToNext()) {
             Album album = new Album();
             album.setAlbumName(cursor.getString(0));
-            album.setAlbumUri(cursor.getString(1));
+            album.setAlbumUri(cursor.getBlob(1));
             album.setSongNum(cursor.getInt(2));
             albumList.add(album);
         }
@@ -69,11 +73,11 @@ public class AlbumDaoImpl implements AlbumDao {
 
     /**
      * 通过条件查询将所属专辑的歌曲查找出来
-     *
      * @param sqLiteDatabase
      * @param albums
      * @return
      */
+
     @Override
     public List<Album> selectSongByAlbum(SQLiteDatabase sqLiteDatabase, String albums) {
         List<Album> songListByAlbum = new ArrayList<Album>();
@@ -87,5 +91,34 @@ public class AlbumDaoImpl implements AlbumDao {
             songListByAlbum.add(album);
         }
         return songListByAlbum;
+    }
+
+    @Override
+    public List<Song> selectSongAllByAlbum(SQLiteDatabase sqLiteDatabase, String album) throws SQLException {
+        List<Song> songAllByAlbumList = new ArrayList<Song>();
+        String sql = "select songName, singer, songUri, songImage, singlyrics, time, information,rank from songs where albumName=? ";
+        String[] selectionArgs = new String[]{album};
+        Cursor cursor = sqlManager.execRead(sqLiteDatabase, sql, selectionArgs);
+        while (cursor.moveToNext()) {
+            Song song=new Song();
+            song.setSongName(cursor.getString(0));
+            song.setSinger(cursor.getString(1));
+            song.setSongUri(cursor.getString(2));
+            song.setSongImage(cursor.getBlob(3));
+            song.setSingLyrics(cursor.getString(4));
+            song.setTime(cursor.getString(5));
+            song.setInformation(cursor.getString(6));
+            song.setRank(cursor.getString(7));
+            songAllByAlbumList.add(song);
+        }
+        return songAllByAlbumList;
+    }
+
+    //专辑中有歌手名，专辑名，歌曲名，根据这几项，关联查询到当前songs表中的所有符合的数据
+    @Override
+    public List<Map<String, Object>> selectAllSongByAlbums(SQLiteDatabase sqLiteDatabase, String album) throws SQLException {
+        List<Map<String,Object>> songAllByAlbums=new ArrayList<Map<String,Object>>();
+        String sql="";
+        return null;
     }
 }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.designers.kuwo.R;
@@ -18,10 +17,10 @@ import java.util.Map;
  */
 public class MusicFromListViewAdapter extends BaseAdapter {
     private Context context;
-    private List<Map<String, ?>> listItems;
+    private List<Map<String, Object>> listItems;
     private LayoutInflater inflater;
 
-    public MusicFromListViewAdapter(Context context, List<Map<String, ?>> listItems) {
+    public MusicFromListViewAdapter(Context context, List<Map<String, Object>> listItems) {
         this.context = context;
         this.listItems = listItems;
         inflater = LayoutInflater.from(context);
@@ -47,10 +46,9 @@ public class MusicFromListViewAdapter extends BaseAdapter {
         ViewHolder viewHolder = null;
         if (null == convertView) {
             viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.musicform_item_layout, null);
+            convertView = inflater.inflate(R.layout.add_dialog_item, null);
             viewHolder.itemMusicForm_name_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_name_txt);
             viewHolder.itemMusicForm_num_txt = (TextView) convertView.findViewById(R.id.itemMusicForm_num_txt);
-            viewHolder.itemMusicForm_btn = (ImageButton) convertView.findViewById(R.id.itemMusicForm_btn);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -67,7 +65,6 @@ public class MusicFromListViewAdapter extends BaseAdapter {
     private class ViewHolder {
         public TextView itemMusicForm_name_txt;
         public TextView itemMusicForm_num_txt;
-        public ImageButton itemMusicForm_btn;
     }
 
 }

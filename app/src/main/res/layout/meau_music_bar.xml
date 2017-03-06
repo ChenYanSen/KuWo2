@@ -1,7 +1,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="40dp"
+    android:layout_height="62dp"
     android:background="@color/musicform_toolbar_color"
     android:orientation="horizontal">
 
@@ -9,8 +9,7 @@
         android:id="@+id/imgMenuBar"
         android:layout_width="25dp"
         android:layout_height="30dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginTop="22dp"
         android:background="@drawable/back"/>
 
     <TextView
@@ -18,9 +17,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="本地音乐"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textColor="#ffffff"
         android:layout_gravity="center"
-        android:layout_marginLeft="120dp" />
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="5dp"/>
 
 </LinearLayout>

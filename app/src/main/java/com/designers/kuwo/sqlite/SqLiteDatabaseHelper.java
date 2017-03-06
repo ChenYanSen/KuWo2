@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
 
@@ -30,7 +31,7 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sql_cascade);
 
         /**
-         * ����user���û�����Ϣ ID �˺ţ�����  ����  �ǳ�  ����ǩ�� �Ա� ���� ͷ��
+         * 创建user表，用户的信息 ID 账号，密码  爱好  昵称  个性签名 性别 地区 头像
          */
         String sql_user = "create table user(account varchar(20) primary key," +
                 "password varchar(20)," +
@@ -43,76 +44,71 @@ public class SqLiteDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sql_user);
 
         /**
-         * �����赥�� �赥��  ���� �˺ţ������û����˺ţ�
+         * 创建歌单表 歌单名  歌名 账号（参照用户的账号）
          */
-        String sql_songList = "create table songList(songListName varchar(20) primary key," +
-                "account varchar(20) references user(account))";
+        String sql_songList = "create table songList(songListName varchar(20)," +
+                "songName varchar(30)," +
+                "account varchar(20))";
         sqLiteDatabase.execSQL(sql_songList);
 
         /**
-         * ����ר��    ר���� ���� �˺ţ������û��ĵ��˺ţ�
+         * 专辑
          */
         String sql_album = "create table album(albumName varchar(20) ," +
                 "songName varchar(20),"+
                 "singer varchar(20)," +
-                "albumUri varchar(30)," +
+                "albumUri blob," +
                 "account varchar(20) references user(account))";
         sqLiteDatabase.execSQL(sql_album);
 
-        //albumId INTEGER PRIMARY KEY autoincrement," + "、、
-        //2017/2/21�ս�songUri ��Ϊ albumUri   ��
-
         /**
-         * �������ֱ� ���� ���� �洢·�� ͼƬ ��� ��ϸ��Ϣ
+         * 创建音乐表， 歌名 歌手 存储路径 图片 歌词 详细信息
          */
         String sql_songs = "create table songs(songName varchar(20) ," +
                 "singer varchar(20)," +
-                "singerUri varchar(30)," +
-                "songUri varchar(30)," +
-                "songImage varchar(100)," +
+                "songUri varchar(100)," +
+                "songImage blob," +
+                "singerUri blob," +
                 "singlyrics text," +
-                "albumUri varchar(30)," +
                 "time varchar(20)," +
                 "information varchar(50) ," +
                 "folder varchar(50),"+
+                "rank text," +
                 "primary key(songName,singer))";
         sqLiteDatabase.execSQL(sql_songs);
 
-        //2017/2/21����� singerUri  albumUri ��
 
         /**
-         * ����collection��  ���� �˺ţ������û����˺ţ�
+         * 收藏
          */
-        String sql_collection = "create table collection(SongName varchar(20)," +
+        String sql_collection = "create table collection(songName varchar(20)," +
                 "singer varchar(20),"+
-                "account varchar(20) references user(account))";
+                "songUri varchar(100)," +
+                "songImage blob," +
+                "singlyrics text," +
+                "time varchar(20)," +
+                "information varchar(50)," +
+                "folder varchar(50),"+
+                "rank text,"+
+                "account varchar(20))";
         sqLiteDatabase.execSQL(sql_collection);
 
         /**
-         * ���������б� �������������ֵĸ���)�����б�����ظ�����
+         * 创建最近播放列表  歌名 歌手
          */
-        String sql_playList = "create table playList(songName varchar(20),"+
-                "singer varchar(20),"+
-                "songUri varchar(30),"+
-                "songImage varchar(100),"+
-                "singlyrics text)";
-        sqLiteDatabase.execSQL(sql_playList);
+        String sql_recentlyPlayed = "create table recent(songName varchar(30)," +
+                "date text)";
+        sqLiteDatabase.execSQL(sql_recentlyPlayed);
 
         /**
-         * ������������б�  ���� ����
+         * 创建音乐视频播放列表
          */
-        String sql_recentlyPlayed = "create table recent(songName varchar(20)," +
-                "singer varchar(20) ," +
-                "songUri varchar(50)," +
-                "primary key(songName,singer))";
-        sqLiteDatabase.execSQL(sql_recentlyPlayed);
-        /**
-         * ����������Ƶ�����б�
-         */
-        String sql_videoPlay="create table videoPlay(videoName varchar (20),"+
-                "videoUri varchar(50),"+
+        String sql_videoPlay = "create table videoPlay(videoName varchar (20)," +
+                "videoUri varchar(50)," +
                 "primary key(videoName,videoUri))";
         sqLiteDatabase.execSQL(sql_videoPlay);
+
+        Log.i("test", "表创建成功!");
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int arg1, int arg2) {
